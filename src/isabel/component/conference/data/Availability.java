@@ -21,7 +21,7 @@ public class Availability implements Serializable {
 	private static final long serialVersionUID = -5591470141455010360L;
 	
 	/**
-	 * Lista de las conferencias de la aplicación.
+	 * Lista de las conferencias de la aplicacion.
 	 */
 	@XmlElement(name="available")
 	public Collection<Available> available = new HashSet<Available>();
