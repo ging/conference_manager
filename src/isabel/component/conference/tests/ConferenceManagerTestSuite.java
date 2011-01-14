@@ -41,7 +41,7 @@ public class ConferenceManagerTestSuite {
 		//Configuramos CM
 		try {
 			System.out.println("Leyendo configuracion");
-			ConfigurationParser.parse("config/config-test.xml");
+			ConfigurationParser.parse("config/config.xml");
 			if (!ConfigurationParser.debug) {
 				System.exit(1);
 			}
