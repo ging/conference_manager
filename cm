@@ -1,0 +1,7 @@
+#! /bin/bash
+#test
+
+IST_DIR=$( dirname $0 )
+cd $IST_DIR
+
+java -classpath $( echo lib/*.jar . | sed 's/ /:/g'):config/:. isabel/component/conference/ConferenceManager >/dev/null 2>&1 &  echo $! > /var/run/cm.pid

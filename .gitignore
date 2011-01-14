@@ -1,0 +1,16 @@
+/build
+/bin
+/tmp
+/test-reports
+/build.xml
+/dst/vncdns
+/logs/*
+/config/config-test.xml
+/config/config.xml
+/config/hibernate-test.cfg.xml
+/config/hibernate.cfg.xml
+/config/logback.xml
+/config/logbacktest.xml
+/config/monitor.xml
+/config/quartz2.properties
+/config/quartz2test.properties

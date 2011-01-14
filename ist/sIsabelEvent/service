@@ -1,0 +1,2392 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#@setup@ desc    Tele-Meeting
+########################################################################
+#
+#  ISABEL: A group collaboration tool for the Internet
+#  Copyright (C) 2009 Agora System S.A.
+#  
+#  This file is part of Isabel.
+#  
+#  Isabel is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#  
+#  Isabel is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+# 
+#  You should have received a copy of the GNU General Public License
+#  along with Isabel.  If not, see <http://www.gnu.org/licenses/>.
+#
+########################################################################
+
+
+########################################################################
+#
+#  ISABEL: A group collaboration tool for the Internet
+#  Copyright (C) 2009 Agora System S.A.
+#  
+#  This file is part of Isabel.
+#  
+#  Isabel is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#  
+#  Isabel is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+# 
+#  You should have received a copy of the GNU General Public License
+#  along with Isabel.  If not, see <http://www.gnu.org/licenses/>.
+#
+########################################################################
+
+# SERVICE PARAMETERS AND CTES
+########################################################################
+#
+#  ISABEL: A group collaboration tool for the Internet
+#  Copyright (C) 2009 Agora System S.A.
+#  
+#  This file is part of Isabel.
+#  
+#  Isabel is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#  
+#  Isabel is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+# 
+#  You should have received a copy of the GNU General Public License
+#  along with Isabel.  If not, see <http://www.gnu.org/licenses/>.
+#
+########################################################################
+
+#########################################################################
+#
+# defmacros
+#
+# Description
+#
+#  M4 macros used to generate service files.
+#
+#########################################################################
+
+#------------------
+# PUBLIC MACROS
+#------------------
+
+#
+# ExternalDefinition
+# 
+# If the given variable (first argument) is defined, then it is replaced
+# with its defined value.
+# If not defined, then it is replaced with the default value (second
+# argument).
+#
+# Example: ExternalDefinition(`KKK',33)
+#          if KKK is defined, then it is replaced with its defined
+#          value, else it is replaced with 33.
+#
+
+
+
+#
+# NoEmptyExternalDefinition
+# 
+# If the given variable (first argument) is defined and it is no empty,
+# then it is replaced with its defined value.
+# If not defined or its value is empty, then it is replaced with the default 
+# value (second argument).
+#
+# Example: NoEmptyExternalDefinition(`KKK',33)
+#          if KKK is defined and it is no "", then it is replaced with its defined
+#          value, else it is replaced with 33.
+#
+
+
+
+#
+# defKeys 
+#
+# Defines the selection key values and their order.
+#
+# Example: defKeyValues(`ISABEL_QUALITY',1M,2M,3M) 
+#
+
+
+
+
+#
+# defParZ
+#
+# Compress definition of all the QoS constant values for each defined key.
+#
+# Example: defParZ(`ISABEL_QUALITY',`_ISERV_VIDEO_RATE',2,4,10)
+#
+
+
+
+#
+# defParV
+#
+# Verbose definition of all the QoS constant values for each defined key.
+#
+# Example: defParV(`ISABEL_QUALITY', `_ISERV_VIDEO_RATE', 
+#                         1M,              2,
+#                         2M,              4,
+#                         3M,             10)
+#
+
+
+#-------------------
+# PRIVATE MACROS
+#-------------------
+
+#
+# defParZAux
+#
+# Auxiliar define used by defParZ.
+# It append an extra third argument to store a progress index.
+# if the value stored in the position $3-th of the list associated to
+# $1 is equal to $1, then $2 is defined as the value of the argument
+# 3+$3. Else, $3 is incremented to look for in the next position.
+#
+# Example: defParZAux(`ISABEL_QUALITY',`_ISERV_VIDEO_RATE',3,a,b,c,d,e,f)
+#
+
+
+
+#
+# getList
+#
+# Returns a value for a list of arguments.
+#
+# The first argument is the position of the value to get.
+# The other arguments are the list to explore.
+#
+# Example: getList(3,a,b,c,d,e,f) -> c
+#
+
+
+
+#
+# inList
+#
+# Returns 1 if the first argument is contained in the given list,
+# else returns 0.
+#
+#
+# Example: inList(hola, uno, adios, hola, otro) -> 1 
+#
+
+
+
+#----------------------------------------------------------------------
+
+########################################################################
+#
+#  ISABEL: A group collaboration tool for the Internet
+#  Copyright (C) 2009 Agora System S.A.
+#  
+#  This file is part of Isabel.
+#  
+#  Isabel is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#  
+#  Isabel is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+# 
+#  You should have received a copy of the GNU General Public License
+#  along with Isabel.  If not, see <http://www.gnu.org/licenses/>.
+#
+########################################################################
+
+#--------------------------------------------------- 
+# ISABEL_QUALITY
+#--------------------------------------------------- 
+
+
+ 
+
+
+########################################################################
+#
+#  ISABEL: A group collaboration tool for the Internet
+#  Copyright (C) 2009 Agora System S.A.
+#  
+#  This file is part of Isabel.
+#  
+#  Isabel is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#  
+#  Isabel is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+# 
+#  You should have received a copy of the GNU General Public License
+#  along with Isabel.  If not, see <http://www.gnu.org/licenses/>.
+#
+########################################################################
+
+
+#--------------------------------------------
+# Service
+#--------------------------------------------
+
+# Maximun number of sites:
+#                                                   10M,  2M   1M 512K 384K 256K 128K 300K/1M 128/256K
+
+
+#--------------------------------------------
+# Audio
+#--------------------------------------------
+
+#
+# Recomended codec foreach interaction mode:
+#                                                              10M          2M          1M       512K       384K      256K      128K   300K/1M  128/256K
+
+
+
+
+
+
+
+
+
+
+
+
+#
+# Activate audio mixer in the irouter daemons (1) or not (0).
+#                                                       10M  2M 1M 512K 384K 256K 128K 300K/1M  128/256K
+
+
+#
+# Maximum audio BW foreach interaction mode:
+#                                                        10M   2M    1M  512K  384K  256K 128K  300K/1M 128/256K
+
+
+
+
+
+
+
+
+
+
+
+
+#--------------------------------------------
+# Video: Vga
+#--------------------------------------------
+
+#
+# Vga Bandwidth usage:
+#
+#                                                      10M   2M   1M 512K 384K 256K 128K 300K/1M 128/256K
+
+
+#--------------------------------------------
+# Video: Cameras
+#--------------------------------------------
+
+#
+# Video Bandwith usage:
+#
+#                                                  10M    2M     1M   512K   384K   256K   128K  300K/1M 128/256K
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#
+# Video Display Sizes:
+#
+#                                               10M   2M   1M 512K 384K 256K 128K 300K/1M 128/256K
+
+
+
+
+#--------------------------------------------
+# Shared Display:
+#--------------------------------------------
+
+#                                                     10M      2M      1M    512K    384K    256K    128K  300K/1M 128/256K
+# Shdisplay PDU size.
+
+
+# ShDisplay Bandwidth usage.
+
+
+# ShDisplay codec.
+
+
+# ShDisplay quality.
+
+
+#--------------------------------------------
+# FTP:
+#--------------------------------------------
+
+
+
+
+#--------------------------------------------
+
+########################################################################
+#
+#  ISABEL: A group collaboration tool for the Internet
+#  Copyright (C) 2009 Agora System S.A.
+#  
+#  This file is part of Isabel.
+#  
+#  Isabel is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#  
+#  Isabel is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+# 
+#  You should have received a copy of the GNU General Public License
+#  along with Isabel.  If not, see <http://www.gnu.org/licenses/>.
+#
+########################################################################
+
+#--------------------------------------------------- 
+# ISABEL_ENABLE_VNC_MODE
+#--------------------------------------------------- 
+
+
+#?VAR ISABEL_ENABLE_VNC_MODE \
+      -descr {Enable VNC mode?} \
+      -scope global \
+      -type enum \
+      -values "yes no" \
+      -default yes
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+########################################################################
+#
+#  ISABEL: A group collaboration tool for the Internet
+#  Copyright (C) 2009 Agora System S.A.
+#  
+#  This file is part of Isabel.
+#  
+#  Isabel is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#  
+#  Isabel is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+# 
+#  You should have received a copy of the GNU General Public License
+#  along with Isabel.  If not, see <http://www.gnu.org/licenses/>.
+#
+########################################################################
+ 
+#--------------------------------------------------- 
+# ISABEL_AUDIO_BYPASS_1
+# ISABEL_AUDIO_BYPASS_2
+# ISABEL_AUDIO_BYPASS_3
+#
+# Definition of Audio master-slaves relationshipes.
+# Format: 
+#      master_site_id slave1_site_id slave1_site_id slave1_site_id ...
+#--------------------------------------------------- 
+
+
+
+
+#?VAR ISABEL_AUDIO_BYPASS_1 \
+      -descr {Audio master-slaves bypass 1} \
+      -scope global \
+      -type string \
+      -default ""
+
+
+
+
+#?VAR ISABEL_AUDIO_BYPASS_2 \
+      -descr {Audio master-slaves bypass 2} \
+      -scope global \
+      -type string \
+      -default ""
+
+
+
+
+#?VAR ISABEL_AUDIO_BYPASS_3 \
+      -descr {Audio master-slaves bypass 3} \
+      -scope global \
+      -type string \
+      -default ""
+
+
+
+
+
+########################################################################
+#
+#  ISABEL: A group collaboration tool for the Internet
+#  Copyright (C) 2009 Agora System S.A.
+#  
+#  This file is part of Isabel.
+#  
+#  Isabel is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#  
+#  Isabel is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+# 
+#  You should have received a copy of the GNU General Public License
+#  along with Isabel.  If not, see <http://www.gnu.org/licenses/>.
+#
+########################################################################
+
+
+########################################################################
+#
+#  ISABEL: A group collaboration tool for the Internet
+#  Copyright (C) 2009 Agora System S.A.
+#  
+#  This file is part of Isabel.
+#  
+#  Isabel is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#  
+#  Isabel is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+# 
+#  You should have received a copy of the GNU General Public License
+#  along with Isabel.  If not, see <http://www.gnu.org/licenses/>.
+#
+########################################################################
+
+#
+# Media display resolution
+#
+
+
+
+#
+# Application sharing:
+#
+
+
+
+#
+# Notepad
+#
+
+
+#
+# Whiteboard
+#
+
+
+#
+# Slides
+#
+
+
+
+
+
+
+
+# ACTIVITY DEFINITION
+########################################################################
+#
+#  ISABEL: A group collaboration tool for the Internet
+#  Copyright (C) 2009 Agora System S.A.
+#  
+#  This file is part of Isabel.
+#  
+#  Isabel is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#  
+#  Isabel is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+# 
+#  You should have received a copy of the GNU General Public License
+#  along with Isabel.  If not, see <http://www.gnu.org/licenses/>.
+#
+########################################################################
+
+# --------------------------------------------------------------------
+#                    ACTIVITY DEFINITION
+# --------------------------------------------------------------------
+
+TeleMeeting.whatis: service
+
+TeleMeeting.geometry:         -100-000 0 1 SE
+TeleMeeting.actioners:        Server Ctrl
+TeleMeeting.maxsites:         100
+TeleMeeting.virtualw:         1024
+TeleMeeting.virtualh:         768
+TeleMeeting.overrideredirect: 0
+TeleMeeting.logopos:          -row 0 -column 0
+TeleMeeting.logo:             ""
+
+TeleMeeting.roles.Interactive: Server Everybody Nobody Ctrl
+TeleMeeting.roles.MediaServer: Server Everybody Nobody Ctrl
+TeleMeeting.roles.SipGateway:  SipGateway
+TeleMeeting.roles.FlashGateway: FlashGateway
+TeleMeeting.roles.GatewayClient:   GatewayClient
+TeleMeeting.roles.MCU:         MCU Ctrl
+TeleMeeting.roles.Watchpoint:  Watchpoint
+
+TeleMeeting.required.versions:  Isabel-4.12.beta9
+
+
+
+
+
+
+
+# ROLES DEFINITION
+########################################################################
+#
+#  ISABEL: A group collaboration tool for the Internet
+#  Copyright (C) 2009 Agora System S.A.
+#  
+#  This file is part of Isabel.
+#  
+#  Isabel is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#  
+#  Isabel is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+# 
+#  You should have received a copy of the GNU General Public License
+#  along with Isabel.  If not, see <http://www.gnu.org/licenses/>.
+#
+########################################################################
+
+Server.whatis:    role
+Server.sites:      Master
+
+Everybody.whatis: role
+Everybody.sites:   .*
+
+Nobody.whatis:    role
+Nobody.sites:      _no_body_
+
+Ctrl.whatis:      role
+Ctrl.sites:        .*
+
+SipGateway.whatis:  role
+SipGateway.sites:  .*
+
+FlashGateway.whatis:  role
+FlashGateway.sites:  .*
+
+GatewayClient.whatis:  role
+GatewayClient.sites:  .*
+
+Watchpoint.whatis:  role
+Watchpoint.sites:  __WATCHPOINT__
+
+MCU.whatis:  role
+MCU.sites:  .*
+
+
+########################################################################
+#
+#  ISABEL: A group collaboration tool for the Internet
+#  Copyright (C) 2009 Agora System S.A.
+#  
+#  This file is part of Isabel.
+#  
+#  Isabel is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#  
+#  Isabel is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+# 
+#  You should have received a copy of the GNU General Public License
+#  along with Isabel.  If not, see <http://www.gnu.org/licenses/>.
+#
+########################################################################
+
+# --------------------------------------------------------------------
+#                    ROLES DEFINITION
+# --------------------------------------------------------------------
+
+Everybody.components:  Audio Ftp Monitor Notepad Wallpaper \
+                       Questions Video Whiteboard \
+		       VNC ShDisplay
+                       
+Everybody.actions:     IdleMode \
+                       OneMode \
+                       ChatMode \
+                       QuestionsMode \
+                       DocCamera \
+                       VgaMode \
+                       AppSharingMode \
+                       WhiteboardMode \
+                       NotepadMode \
+                       CreateAudio \
+                       Admon \
+                       QuitIsabel
+
+Everybody.menuitems:  AdminTool \
+                      InfoVideo VideoSource \
+                      VgaSource \
+                      AudioConfig \
+                      MonitorStart MonitorStop
+
+
+# --------------------------------------------------------------------
+
+SipGateway.components: Ftp Notepad Wallpaper \
+                       Questions Video Whiteboard \
+		       VNC ShDisplay
+                       
+SipGateway.actions:    Admon \
+                       QuitIsabel
+
+SipGateway.menuitems: AdminTool
+
+# --------------------------------------------------------------------
+
+FlashGateway.components: Ftp Notepad Wallpaper \
+                       Questions Video Whiteboard \
+		       VNC ShDisplay
+                       
+FlashGateway.actions:    Admon \
+                       QuitIsabel
+
+FlashGateway.menuitems: AdminTool
+
+# --------------------------------------------------------------------
+
+GatewayClient.components:  Audio Questions Video
+                       
+GatewayClient.actions:
+
+GatewayClient.menuitems:
+
+# --------------------------------------------------------------------
+
+Ctrl.sites:      Master .*
+
+Ctrl.components:  
+
+Ctrl.actions:   
+
+Ctrl.menuitems: ShDisplayFactor \
+                VideoFactor \
+                IrouterTrafficLogs IrouterReset
+
+
+#               IrouterConfig
+
+# --------------------------------------------------------------------
+
+MCU.components:  Monitor \
+		      VNC ShDisplay
+                       
+MCU.actions:     Admon \
+                 SelectVncServer \
+                 QuitIsabel
+
+MCU.menuitems:   AdminTool \
+                 MonitorStart MonitorStop
+
+# --------------------------------------------------------------------
+
+Watchpoint.components: Audio Ftp Monitor Notepad Wallpaper \
+                       Questions Video Whiteboard \
+		       VNC ShDisplay
+                       
+Watchpoint.actions:    CreateAudio \
+                       Admon \
+                       QuitIsabel
+
+Watchpoint.menuitems: 
+                       
+# --------------------------------------------------------------------
+
+
+
+# USER VIEWS DEFINITION
+########################################################################
+#
+#  ISABEL: A group collaboration tool for the Internet
+#  Copyright (C) 2009 Agora System S.A.
+#  
+#  This file is part of Isabel.
+#  
+#  Isabel is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#  
+#  Isabel is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+# 
+#  You should have received a copy of the GNU General Public License
+#  along with Isabel.  If not, see <http://www.gnu.org/licenses/>.
+#
+########################################################################
+
+
+# --------------------------------------------------------------------
+#                    USER ACTIONS DEFINITION
+# --------------------------------------------------------------------
+
+IdleMode.whatis:    action
+IdleMode.pos:       -row 0 -column 1
+IdleMode.title:     @ng/psmall2.gif
+IdleMode.balloon:   Idle mode
+IdleMode.cmd:       SetIMode idlemode \
+         "PRST Video ShDisplay Whiteboard Audio"
+
+
+ChatMode.whatis:    action
+ChatMode.pos:       -row 0 -column 2
+ChatMode.title:     @ng/pall.gif
+ChatMode.balloon:   Chat mode
+ChatMode.cmd:       SetIMode chatmode \
+         "PRST ShDisplay Fax Whiteboard Audio Video" *
+
+
+OneMode.whatis:    action
+OneMode.pos:        -row 0 -column 3
+OneMode.title:     @ng/gc1.gif
+OneMode.balloon:   One mode
+OneMode.cmd:       SetIMode onemode \
+         "PRST ShDisplay Fax Whiteboard Audio Video" %U
+
+
+QuestionsMode.whatis:  action
+QuestionsMode.pos:     -row 0 -column 4
+QuestionsMode.title:   @ng/pques3.gif
+QuestionsMode.balloon: Questions mode
+QuestionsMode.cmd:     SetIMode quesmode "" %U  -ctrlsites *
+
+
+DocCamera.whatis:   action
+DocCamera.pos:      -row 0 -column 5
+DocCamera.title:    @ng/pcamdoc.gif 
+DocCamera.balloon:  Document camera presentation mode
+DocCamera.cmd:      SetIMode doccamera \
+          "ShDisplay Whiteboard PRST Audio Video" %U
+
+
+VgaMode.whatis:   action
+VgaMode.pos:      -row 0 -column 6
+VgaMode.title:    @ng/pvdemo.gif
+VgaMode.balloon:  VGA mode
+VgaMode.cmd:      SetIMode vgamode "" %U -vgasite %U
+
+
+AppSharingMode.whatis:   action
+AppSharingMode.pos:      -row 0 -column 8
+AppSharingMode.title:    @vnc2.gif
+AppSharingMode.balloon:  Application sharing mode
+AppSharingMode.cmd:      SetIMode appsharingmode \
+              "Video Whiteboard PRST Audio ShDisplay" %U
+
+
+SelectVncServer.whatis:    action
+SelectVncServer.pos:       -row 0 -column 8
+SelectVncServer.title:     @vnc2.gif
+SelectVncServer.balloon:   Select local VNC server
+SelectVncServer.cmd:       VNC VNCServersEditorC::ToggleMap
+
+
+WhiteboardMode.whatis:  action
+WhiteboardMode.pos:     -row 0 -column 11
+WhiteboardMode.title:   @chalkbrd.gif
+WhiteboardMode.balloon: Whiteboard mode
+WhiteboardMode.cmd:     SetIMode whiteboardmode \
+               "ShDisplay Video PRST Audio Whiteboard Notepad" %U
+
+NotepadMode.whatis:  action
+NotepadMode.pos:     -row 0 -column 12
+NotepadMode.title:   @edit.gif
+NotepadMode.balloon: Notepad mode
+NotepadMode.cmd:     SetIMode notepadmode \
+           "ShDisplay Video PRST Audio Notepad Whiteboard" %U
+
+
+CreateAudio.whatis:  action
+CreateAudio.pos:     -row 0 -column 14
+CreateAudio.title:   @mezcla.gif
+CreateAudio.balloon: Start/Show/Hide audio
+CreateAudio.cmd:     CreateJoinHideShowComp %U Audio
+
+
+Admon.whatis:    action
+Admon.pos:       -row 0 -column 19
+Admon.title:     @ng/tools.gif
+Admon.balloon:   Open administration menu
+Admon.cmd:       interface OpenMenuitemsMenu
+
+
+QuitIsabel.whatis:    action
+QuitIsabel.pos:       -row 0 -column 20
+QuitIsabel.title:     @ng/door.gif
+QuitIsabel.title2:    @ng/door_open.gif
+QuitIsabel.balloon:   Exit ISABEL
+QuitIsabel.cmd:       QuitSite
+
+
+
+
+# MENUITEMS DEFINITION
+########################################################################
+#
+#  ISABEL: A group collaboration tool for the Internet
+#  Copyright (C) 2009 Agora System S.A.
+#  
+#  This file is part of Isabel.
+#  
+#  Isabel is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#  
+#  Isabel is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+# 
+#  You should have received a copy of the GNU General Public License
+#  along with Isabel.  If not, see <http://www.gnu.org/licenses/>.
+#
+########################################################################
+
+#--------------------------------------------------------------------
+
+AdminTool.whatis:  menuitem
+AdminTool.title:   Global state
+AdminTool.title:   @mesa11.gif
+AdminTool.path:    Administration
+AdminTool.cmd:     interface Admin showhide
+
+#--------------------------------------------------------------------
+
+########################################################################
+#
+#  ISABEL: A group collaboration tool for the Internet
+#  Copyright (C) 2009 Agora System S.A.
+#  
+#  This file is part of Isabel.
+#  
+#  Isabel is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#  
+#  Isabel is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+# 
+#  You should have received a copy of the GNU General Public License
+#  along with Isabel.  If not, see <http://www.gnu.org/licenses/>.
+#
+########################################################################
+
+MonitorStart.whatis:    menuitem 
+MonitorStart.title:     Start Monitor
+MonitorStart.path:      Monitor
+MonitorStart.cmd:       Monitor Cmd Start
+
+MonitorStop.whatis:   menuitem
+MonitorStop.title:    Stop Monitor
+MonitorStop.path:     Monitor
+MonitorStop.cmd:      Monitor Cmd Stop
+
+########################################################################
+#
+#  ISABEL: A group collaboration tool for the Internet
+#  Copyright (C) 2009 Agora System S.A.
+#  
+#  This file is part of Isabel.
+#  
+#  Isabel is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#  
+#  Isabel is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+# 
+#  You should have received a copy of the GNU General Public License
+#  along with Isabel.  If not, see <http://www.gnu.org/licenses/>.
+#
+########################################################################
+
+#--------------------------------------------------------------------
+
+VideoFactor.whatis:  menuitem
+VideoFactor.title:   @grifo.gif
+VideoFactor.path:    Video
+VideoFactor.cmd:     Video VideoConfigC::ToggleShowHide
+
+#--------------------------------------------------------------------
+
+VideoSource.whatis:  menuitem
+VideoSource.title:   @video_camera.gif
+VideoSource.path:    Video
+VideoSource.cmd:     Video VideoSourceC::ToggleShowHide
+
+#--------------------------------------------------------------------
+
+InfoVideo.whatis:  menuitem
+InfoVideo.title:   @info_2.gif
+InfoVideo.path:    Video
+InfoVideo.cmd:     Video VideoLayoutInfoC::ToggleShowHide
+
+#--------------------------------------------------------------------
+
+#--------------------------------------------------------------------
+
+VgaSource.whatis:  menuitem
+VgaSource.title:   @vga.gif
+VgaSource.path:    Video
+VgaSource.cmd:     Video VgaSourceC::ToggleShowHide
+
+#--------------------------------------------------------------------
+
+
+
+
+
+
+########################################################################
+#
+#  ISABEL: A group collaboration tool for the Internet
+#  Copyright (C) 2009 Agora System S.A.
+#  
+#  This file is part of Isabel.
+#  
+#  Isabel is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#  
+#  Isabel is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+# 
+#  You should have received a copy of the GNU General Public License
+#  along with Isabel.  If not, see <http://www.gnu.org/licenses/>.
+#
+########################################################################
+
+#--------------------------------------------------------------------
+
+AudioConfig.whatis:  menuitem
+AudioConfig.title:   @grifo.gif
+AudioConfig.path:    Audio
+AudioConfig.cmd:     Audio AudioConfigC::ToggleShowHide
+
+#--------------------------------------------------------------------
+
+########################################################################
+#
+#  ISABEL: A group collaboration tool for the Internet
+#  Copyright (C) 2009 Agora System S.A.
+#  
+#  This file is part of Isabel.
+#  
+#  Isabel is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#  
+#  Isabel is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+# 
+#  You should have received a copy of the GNU General Public License
+#  along with Isabel.  If not, see <http://www.gnu.org/licenses/>.
+#
+########################################################################
+
+#--------------------------------------------------------------------
+
+ShDisplayFactor.whatis:  menuitem
+ShDisplayFactor.title:   @grifo.gif
+ShDisplayFactor.path:    "Application Sharing"
+ShDisplayFactor.cmd:     ShDisplay ShDisplayConfigC::ToggleShowHide
+
+#--------------------------------------------------------------------
+
+
+########################################################################
+#
+#  ISABEL: A group collaboration tool for the Internet
+#  Copyright (C) 2009 Agora System S.A.
+#  
+#  This file is part of Isabel.
+#  
+#  Isabel is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#  
+#  Isabel is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+# 
+#  You should have received a copy of the GNU General Public License
+#  along with Isabel.  If not, see <http://www.gnu.org/licenses/>.
+#
+########################################################################
+
+#--------------------------------------------------------------------
+
+IrouterConfig.whatis:  menuitem
+IrouterConfig.title:   Configure
+IrouterConfig.path:    Irouter
+IrouterConfig.cmd:     IrouterConfigC::ToggleShowHide
+
+#--------------------------------------------------------------------
+
+IrouterTrafficLogs.whatis:  menuitem
+IrouterTrafficLogs.title:   Traffic Logs
+IrouterTrafficLogs.path:    Irouter
+IrouterTrafficLogs.cmd:     IrouterTrafficLogsC::ToggleShowHide
+
+#--------------------------------------------------------------------
+
+IrouterReset.whatis:  menuitem
+IrouterReset.title:   Reset IRouter
+IrouterReset.path:    Irouter
+IrouterReset.cmd:     network SiteBroadcast ::irouter RDO ir7_quit()
+
+#--------------------------------------------------------------------
+
+
+########################################################################
+#
+#  ISABEL: A group collaboration tool for the Internet
+#  Copyright (C) 2009 Agora System S.A.
+#  
+#  This file is part of Isabel.
+#  
+#  Isabel is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#  
+#  Isabel is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+# 
+#  You should have received a copy of the GNU General Public License
+#  along with Isabel.  If not, see <http://www.gnu.org/licenses/>.
+#
+########################################################################
+
+
+
+# COMPONENTS
+########################################################################
+#
+#  ISABEL: A group collaboration tool for the Internet
+#  Copyright (C) 2009 Agora System S.A.
+#  
+#  This file is part of Isabel.
+#  
+#  Isabel is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#  
+#  Isabel is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+# 
+#  You should have received a copy of the GNU General Public License
+#  along with Isabel.  If not, see <http://www.gnu.org/licenses/>.
+#
+########################################################################
+
+#--------------------------------------------------------------------
+# Component: Ftp
+#--------------------------------------------------------------------
+
+Ftp.whatis:     component    
+Ftp.itl.bw:     700
+
+#--------------------------------------------------------------------
+
+
+
+########################################################################
+#
+#  ISABEL: A group collaboration tool for the Internet
+#  Copyright (C) 2009 Agora System S.A.
+#  
+#  This file is part of Isabel.
+#  
+#  Isabel is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#  
+#  Isabel is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+# 
+#  You should have received a copy of the GNU General Public License
+#  along with Isabel.  If not, see <http://www.gnu.org/licenses/>.
+#
+########################################################################
+
+#--------------------------------------------------------------------
+# Component: Audio
+#--------------------------------------------------------------------
+
+Audio.whatis:        component    
+Audio.geometry:      +280+140
+
+Audio.initchannels:  10
+
+Audio.myinitmute:    0
+
+Audio.initialcodec:  gsm-32KHz
+Audio.initialmaxbw:  300
+
+Audio.ctrlsites:     Ctrl
+Audio.tonesites:     Nobody
+
+Audio.bypass:  0
+Audio.slaves:  {} \
+               {ISABEL_AUDIO_BYPASS_1} \
+               {ISABEL_AUDIO_BYPASS_2} \
+               {ISABEL_AUDIO_BYPASS_3}
+
+Audio.irouter.mixer: 0
+
+#--------------------------------------------------------------------
+
+
+Audio.tonesites:     Ctrl
+
+########################################################################
+#
+#  ISABEL: A group collaboration tool for the Internet
+#  Copyright (C) 2009 Agora System S.A.
+#  
+#  This file is part of Isabel.
+#  
+#  Isabel is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#  
+#  Isabel is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+# 
+#  You should have received a copy of the GNU General Public License
+#  along with Isabel.  If not, see <http://www.gnu.org/licenses/>.
+#
+########################################################################
+
+
+#--------------------------------------------------------------------
+# Component: Wallpaper
+#--------------------------------------------------------------------
+
+Wallpaper.whatis:          component
+
+Wallpaper.background:            jpg/defaultbackground.jpg
+
+#--------------------------------------------------------------------
+
+
+########################################################################
+#
+#  ISABEL: A group collaboration tool for the Internet
+#  Copyright (C) 2009 Agora System S.A.
+#  
+#  This file is part of Isabel.
+#  
+#  Isabel is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#  
+#  Isabel is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+# 
+#  You should have received a copy of the GNU General Public License
+#  along with Isabel.  If not, see <http://www.gnu.org/licenses/>.
+#
+########################################################################
+
+#--------------------------------------------------------------------
+
+VNC.whatis:           component    
+VNC.server.display:   :89
+VNC.server.size:      800x600
+VNC.admin.show:       1
+
+#--------------------------------------------------------------------
+
+
+########################################################################
+#
+#  ISABEL: A group collaboration tool for the Internet
+#  Copyright (C) 2009 Agora System S.A.
+#  
+#  This file is part of Isabel.
+#  
+#  Isabel is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#  
+#  Isabel is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+# 
+#  You should have received a copy of the GNU General Public License
+#  along with Isabel.  If not, see <http://www.gnu.org/licenses/>.
+#
+########################################################################
+
+#--------------------------------------------------------------------
+# Component: Notepad
+#
+# Parameeters:
+#
+#    - Window geometry:  _ISERV_NOTEPAD_GEOMETRY
+#
+#--------------------------------------------------------------------
+
+Notepad.whatis:        component    
+Notepad.layout:        816x640+200+1 0 1
+Notepad.title:         ISABEL_Notepad_mode
+
+#--------------------------------------------------------------------
+
+########################################################################
+#
+#  ISABEL: A group collaboration tool for the Internet
+#  Copyright (C) 2009 Agora System S.A.
+#  
+#  This file is part of Isabel.
+#  
+#  Isabel is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#  
+#  Isabel is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+# 
+#  You should have received a copy of the GNU General Public License
+#  along with Isabel.  If not, see <http://www.gnu.org/licenses/>.
+#
+########################################################################
+
+#--------------------------------------------------------------------
+# Component: Whiteboard
+#--------------------------------------------------------------------
+
+Whiteboard.whatis:        component
+Whiteboard.layout:        816x640+200+1 0 1
+Whiteboard.initpagenum:   1
+Whiteboard.title:         ISABEL_whiteboard_mode
+Whiteboard.Ftp.bw:        700
+Whiteboard.uniqueMaster:  0
+Whiteboard.uniqueView:    1
+
+#--------------------------------------------------------------------
+
+########################################################################
+#
+#  ISABEL: A group collaboration tool for the Internet
+#  Copyright (C) 2009 Agora System S.A.
+#  
+#  This file is part of Isabel.
+#  
+#  Isabel is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#  
+#  Isabel is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+# 
+#  You should have received a copy of the GNU General Public License
+#  along with Isabel.  If not, see <http://www.gnu.org/licenses/>.
+#
+########################################################################
+
+#--------------------------------------------------------------------
+# Component: ShDisplay
+#--------------------------------------------------------------------
+
+ShDisplay.whatis:        component
+ShDisplay.pdusize:       900
+ShDisplay.grabsize:      800x600
+ShDisplay.admin.show:    1
+
+#--------------------------------------------------------------------
+
+
+
+########################################################################
+#
+#  ISABEL: A group collaboration tool for the Internet
+#  Copyright (C) 2009 Agora System S.A.
+#  
+#  This file is part of Isabel.
+#  
+#  Isabel is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#  
+#  Isabel is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+# 
+#  You should have received a copy of the GNU General Public License
+#  along with Isabel.  If not, see <http://www.gnu.org/licenses/>.
+#
+########################################################################
+
+#--------------------------------------------------------------------
+# Component: Video
+#--------------------------------------------------------------------
+
+Video.whatis:        component    
+
+Video.otherlayout:   
+Video.othermap:      0
+
+Video.conftables:    video videomq cameradoc videodemo vga
+
+Video.ratefactor:    1
+
+Video.vga.enabled:    0
+
+#Video.FEC.K:         6
+
+#--------------------------------------------------------------------
+
+# Multiplos de 16:
+#
+#    64x48  128x96  192x144  256x192  320x240  384x288 448x336  512x384
+#  575x432 640x480  704x528  768x576
+#
+
+Video.conftable.video: \
+  {geometry=64x48   bw=0    {codec=MPEG-4 -qlty=0} grabsize=0       framerate=1} \
+  {geometry=64x48   bw=15   {codec=MPEG-4 -qlty=0} grabsize=0       framerate=10} \
+  {geometry=64x48   bw=50   {codec=MPEG-4 -qlty=0} grabsize=0       framerate=25} \
+  {geometry=96x72   bw=0    {codec=MPEG-4 -qlty=0} grabsize=64x48   framerate=1} \
+  {geometry=96x72   bw=15   {codec=MPEG-4 -qlty=0} grabsize=64x48   framerate=10} \
+  {geometry=96x72   bw=50   {codec=MPEG-4 -qlty=0} grabsize=0       framerate=25} \
+  {geometry=128x96  bw=0    {codec=MPEG-4 -qlty=0} grabsize=64x48   framerate=1} \
+  {geometry=128x96  bw=15   {codec=MPEG-4 -qlty=0} grabsize=64x48   framerate=10} \
+  {geometry=128x96  bw=50   {codec=MPEG-4 -qlty=0} grabsize=96x72   framerate=25} \
+  {geometry=160x120 bw=0    {codec=MPEG-4 -qlty=0} grabsize=80x60   framerate=1} \
+  {geometry=160x120 bw=15   {codec=MPEG-4 -qlty=0} grabsize=80x60   framerate=10} \
+  {geometry=160x120 bw=50   {codec=MPEG-4 -qlty=0} grabsize=96x72   framerate=25} \
+  {geometry=192x144 bw=0    {codec=MPEG-4 -qlty=0} grabsize=96x72   framerate=1} \
+  {geometry=192x144 bw=15   {codec=MPEG-4 -qlty=0} grabsize=96x72   framerate=10} \
+  {geometry=192x144 bw=50   {codec=MPEG-4 -qlty=0} grabsize=96x72   framerate=25} \
+  {geometry=256x192 bw=0    {codec=MPEG-4 -qlty=0} grabsize=96x72   framerate=1} \
+  {geometry=256x192 bw=15   {codec=MPEG-4 -qlty=0} grabsize=128x96  framerate=10} \
+  {geometry=256x192 bw=50   {codec=MPEG-4 -qlty=0} grabsize=128x96  framerate=25} \
+  {geometry=320x240 bw=0    {codec=MPEG-4 -qlty=0} grabsize=96x72   framerate=1} \
+  {geometry=320x240 bw=15   {codec=MPEG-4 -qlty=0} grabsize=160x120 framerate=10} \
+  {geometry=320x240 bw=50   {codec=MPEG-4 -qlty=0} grabsize=160x120 framerate=25} \
+  {geometry=448x336 bw=0    {codec=MPEG-4 -qlty=0} grabsize=96x72   framerate=1} \
+  {geometry=448x336 bw=15   {codec=MPEG-4 -qlty=0} grabsize=192x144 framerate=10} \
+  {geometry=448x336 bw=50   {codec=MPEG-4 -qlty=0} grabsize=224x168 framerate=25} \
+  {geometry=640x480 bw=0    {codec=MPEG-4 -qlty=0} grabsize=96x72   framerate=1} \
+  {geometry=640x480 bw=15   {codec=MPEG-4 -qlty=0} grabsize=192x144 framerate=10} \
+  {geometry=640x480 bw=50   {codec=MPEG-4 -qlty=0} grabsize=320x240 framerate=25} \
+  {geometry=800x600 bw=0    {codec=MPEG-4 -qlty=0} grabsize=96x72   framerate=1} \
+  {geometry=800x600 bw=15   {codec=MPEG-4 -qlty=0} grabsize=192x144 framerate=10} \
+  {geometry=800x600 bw=50   {codec=MPEG-4 -qlty=0} grabsize=400x300 framerate=25}
+
+#--------------------------------------------------------------------
+
+Video.conftable.videomq: \
+  {geometry=64x48   bw=0    {codec=MPEG-4 -qlty=0} grabsize=0       framerate=1} \
+  {geometry=64x48   bw=15   {codec=MPEG-4 -qlty=0} grabsize=0       framerate=10} \
+  {geometry=64x48   bw=50   {codec=MPEG-4 -qlty=0} grabsize=0       framerate=25} \
+  {geometry=96x72   bw=0    {codec=MPEG-4 -qlty=0} grabsize=64x48   framerate=1} \
+  {geometry=96x72   bw=15   {codec=MPEG-4 -qlty=0} grabsize=64x48   framerate=10} \
+  {geometry=96x72   bw=50   {codec=MPEG-4 -qlty=0} grabsize=0       framerate=25} \
+  {geometry=128x96  bw=0    {codec=MPEG-4 -qlty=0} grabsize=64x48   framerate=1} \
+  {geometry=128x96  bw=15   {codec=MPEG-4 -qlty=0} grabsize=64x48   framerate=10} \
+  {geometry=128x96  bw=50   {codec=MPEG-4 -qlty=0} grabsize=96x72   framerate=25} \
+  {geometry=160x120 bw=0    {codec=MPEG-4 -qlty=0} grabsize=80x60   framerate=1} \
+  {geometry=160x120 bw=15   {codec=MPEG-4 -qlty=0} grabsize=80x60   framerate=10} \
+  {geometry=160x120 bw=50   {codec=MPEG-4 -qlty=0} grabsize=96x72   framerate=25} \
+  {geometry=192x144 bw=0    {codec=MPEG-4 -qlty=0} grabsize=96x72   framerate=1} \
+  {geometry=192x144 bw=15   {codec=MPEG-4 -qlty=0} grabsize=96x72   framerate=10} \
+  {geometry=192x144 bw=50   {codec=MPEG-4 -qlty=0} grabsize=96x72   framerate=25} \
+  {geometry=256x192 bw=0    {codec=MPEG-4 -qlty=0} grabsize=96x72   framerate=1} \
+  {geometry=256x192 bw=15   {codec=MPEG-4 -qlty=0} grabsize=128x96  framerate=10} \
+  {geometry=256x192 bw=50   {codec=MPEG-4 -qlty=0} grabsize=128x96  framerate=25} \
+  {geometry=320x240 bw=0    {codec=MPEG-4 -qlty=0} grabsize=96x72   framerate=1} \
+  {geometry=320x240 bw=15   {codec=MPEG-4 -qlty=0} grabsize=160x120 framerate=10} \
+  {geometry=320x240 bw=50   {codec=MPEG-4 -qlty=0} grabsize=160x120 framerate=25} \
+  {geometry=448x336 bw=0    {codec=MPEG-4 -qlty=0} grabsize=96x72   framerate=1} \
+  {geometry=448x336 bw=15   {codec=MPEG-4 -qlty=0} grabsize=192x144 framerate=10} \
+  {geometry=448x336 bw=50   {codec=MPEG-4 -qlty=0} grabsize=224x168 framerate=25} \
+  {geometry=640x480 bw=0    {codec=MPEG-4 -qlty=0} grabsize=96x72   framerate=1} \
+  {geometry=640x480 bw=15   {codec=MPEG-4 -qlty=0} grabsize=192x144 framerate=10} \
+  {geometry=640x480 bw=50   {codec=MPEG-4 -qlty=0} grabsize=320x240 framerate=25} \
+  {geometry=800x600 bw=0    {codec=MPEG-4 -qlty=0} grabsize=96x72   framerate=1} \
+  {geometry=800x600 bw=15   {codec=MPEG-4 -qlty=0} grabsize=192x144 framerate=10} \
+  {geometry=800x600 bw=50   {codec=MPEG-4 -qlty=0} grabsize=400x300 framerate=25}
+
+
+#--------------------------------------------------------------------
+
+Video.conftable.cameradoc: \
+  {geometry=64x48   bw=1   {codec=MPEG-4 -qlty=0} grabsize=0  framerate=25}
+
+#--------------------------------------------------------------------
+
+Video.conftable.videodemo: \
+  {geometry=64x48   bw=1   {codec=MPEG-4 -qlty=0} grabsize=0       framerate=25} \
+  {geometry=448x336 bw=1   {codec=MPEG-4 -qlty=0} grabsize=224x168 framerate=25} \
+  {geometry=640x480 bw=1   {codec=MPEG-4 -qlty=0} grabsize=320x240 framerate=25} \
+  {geometry=800x600 bw=1   {codec=MPEG-4 -qlty=0} grabsize=400x300 framerate=25}
+
+#--------------------------------------------------------------------
+
+Video.conftable.vga: \
+  {geometry=64x48   bw=0    {codec=MPEG-4 -qlty=0} grabsize=400x300 framerate=25}
+
+#--------------------------------------------------------------------
+
+Video.vga.enabled: 1
+Video.othermap:    1
+Video.otherlayout: ol3lq ol4lq ol5lq ol10lq ol25lq ol36lq
+
+
+########################################################################
+#
+#  ISABEL: A group collaboration tool for the Internet
+#  Copyright (C) 2009 Agora System S.A.
+#  
+#  This file is part of Isabel.
+#  
+#  Isabel is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#  
+#  Isabel is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+# 
+#  You should have received a copy of the GNU General Public License
+#  along with Isabel.  If not, see <http://www.gnu.org/licenses/>.
+#
+########################################################################
+
+#--------------------------------------------------------------------
+# Component: Questions
+#
+# Parameeters:
+#
+#    none.
+#
+#--------------------------------------------------------------------
+
+Questions.whatis:        component
+Questions.layout:        220x748+5+10 1 1
+Questions.font:          *-courier-*-r-*-*-*-180-*-*-*-*-*-*
+
+########################################################################
+#
+#  ISABEL: A group collaboration tool for the Internet
+#  Copyright (C) 2009 Agora System S.A.
+#  
+#  This file is part of Isabel.
+#  
+#  Isabel is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#  
+#  Isabel is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+# 
+#  You should have received a copy of the GNU General Public License
+#  along with Isabel.  If not, see <http://www.gnu.org/licenses/>.
+#
+########################################################################
+
+#--------------------------------------------------------------------
+# Component: SNMPAgent Monitor
+#--------------------------------------------------------------------
+
+Monitor.whatis:    component    
+
+
+# INTERACTION MODES DEFINITION
+########################################################################
+#
+#  ISABEL: A group collaboration tool for the Internet
+#  Copyright (C) 2009 Agora System S.A.
+#  
+#  This file is part of Isabel.
+#  
+#  Isabel is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#  
+#  Isabel is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+# 
+#  You should have received a copy of the GNU General Public License
+#  along with Isabel.  If not, see <http://www.gnu.org/licenses/>.
+#
+########################################################################
+
+#--------------------------------------------------------------------
+# INTERACTION MODE: idlemode
+#--------------------------------------------------------------------
+
+idlemode.whatis:      imode
+idlemode.Audio:       -active 1 \
+                      -codec "gsm-32KHz" \
+                      -maxbw 300
+idlemode.Video:       -active 1 -layout "" 
+
+
+# --------------------------------------------------------------------
+
+#
+# Layouts for the OTHER videos: LOW QUALITY values
+#
+
+Video.layout.ol3lq: \
+ {video 160x120+000+192 100} \
+ {video 160x120+000+366 100} \
+ {video 160x120+000+540 100}
+
+Video.layout.ol4lq: \
+ {video 128x96+000+192 50} \
+ {video 128x96+000+322 50} \
+ {video 128x96+000+453 50} \
+ {video 128x96+000+583 50}
+
+Video.layout.ol5lq: \
+ {video 96x72+000+192 33} \
+ {video 96x72+000+298 33} \
+ {video 96x72+000+404 33} \
+ {video 96x72+000+510 33} \
+ {video 96x72+000+616 33} 
+
+Video.layout.ol10lq: \
+ {video 96x72+000+192 12} \
+ {video 96x72+000+298 12} \
+ {video 96x72+000+404 12} \
+ {video 96x72+000+510 12} \
+ {video 96x72+000+616 12} \
+ {video 96x72+100+192 12} \
+ {video 96x72+100+298 12} \
+ {video 96x72+100+404 12} \
+ {video 96x72+100+510 12} \
+ {video 96x72+100+616 12} 
+
+Video.layout.ol25lq: \
+ {video 064x048+000+192 5} \
+ {video 064x048+000+274 5} \
+ {video 064x048+000+356 5} \
+ {video 064x048+000+438 5} \
+ {video 064x048+000+520 5} \
+ {video 064x048+000+602 5} \
+ {video 064x048+000+684 5} \
+ {video 064x048+066+192 5} \
+ {video 064x048+066+274 5} \
+ {video 064x048+066+356 5} \
+ {video 064x048+066+438 5} \
+ {video 064x048+066+520 5} \
+ {video 064x048+066+602 5} \
+ {video 064x048+066+684 5} \
+ {video 064x048+132+192 5} \
+ {video 064x048+132+274 5} \
+ {video 064x048+132+356 5} \
+ {video 064x048+132+438 5} \
+ {video 064x048+132+520 5} \
+ {video 064x048+132+602 5} \
+ {video 064x048+132+684 5} \
+ {video 064x048+198+192 5} \
+ {video 064x048+198+274 5} \
+ {video 064x048+198+356 5} \
+ {video 064x048+198+438 5} 
+
+Video.layout.ol36lq: \
+ {video 064x048+000+192 3} \
+ {video 064x048+000+274 3} \
+ {video 064x048+000+356 3} \
+ {video 064x048+000+438 3} \
+ {video 064x048+000+520 3} \
+ {video 064x048+000+602 3} \
+ {video 064x048+000+684 3} \
+ {video 064x048+066+192 3} \
+ {video 064x048+066+274 3} \
+ {video 064x048+066+356 3} \
+ {video 064x048+066+438 3} \
+ {video 064x048+066+520 3} \
+ {video 064x048+066+602 3} \
+ {video 064x048+066+684 3} \
+ {video 064x048+132+192 3} \
+ {video 064x048+132+274 3} \
+ {video 064x048+132+356 3} \
+ {video 064x048+132+438 3} \
+ {video 064x048+132+520 3} \
+ {video 064x048+132+602 3} \
+ {video 064x048+132+684 3} \
+ {video 064x048+198+192 3} \
+ {video 064x048+198+274 3} \
+ {video 064x048+198+356 3} \
+ {video 064x048+198+438 3} \
+ {video 064x048+198+520 3} \
+ {video 064x048+198+602 3} \
+ {video 064x048+198+684 3} \
+ {video 064x048+198+018 3} \
+ {video 064x048+198+110 3} \
+ {video 064x048+264+018 3} \
+ {video 064x048+264+110 3} \
+ {video 064x048+264+192 3} \
+ {video 064x048+264+274 3} \
+ {video 064x048+264+356 3} \
+ {video 064x048+264+438 3} 
+
+
+#--------------------------------------------------------------------
+
+#
+# Layouts for the OTHER videos: HIGH QUALITY values
+#
+
+Video.layout.ol3hq: \
+ {video 160x120+000+192 200} \
+ {video 160x120+000+366 200} \
+ {video 160x120+000+540 200}
+
+Video.layout.ol4hq: \
+ {video 128x96+000+192 100} \
+ {video 128x96+000+322 100} \
+ {video 128x96+000+453 100} \
+ {video 128x96+000+583 100}
+
+Video.layout.ol5hq: \
+ {video 96x72+000+192 67} \
+ {video 96x72+000+298 67} \
+ {video 96x72+000+404 67} \
+ {video 96x72+000+510 67} \
+ {video 96x72+000+616 67} 
+
+Video.layout.ol10hq: \
+ {video 96x72+000+192 25} \
+ {video 96x72+000+298 25} \
+ {video 96x72+000+404 25} \
+ {video 96x72+000+510 25} \
+ {video 96x72+000+616 25} \
+ {video 96x72+100+192 25} \
+ {video 96x72+100+298 25} \
+ {video 96x72+100+404 25} \
+ {video 96x72+100+510 25} \
+ {video 96x72+100+616 25} 
+
+Video.layout.ol25hq: \
+ {video 064x048+000+192 9} \
+ {video 064x048+000+274 9} \
+ {video 064x048+000+356 9} \
+ {video 064x048+000+438 9} \
+ {video 064x048+000+520 9} \
+ {video 064x048+000+602 9} \
+ {video 064x048+000+684 9} \
+ {video 064x048+066+192 9} \
+ {video 064x048+066+274 9} \
+ {video 064x048+066+356 9} \
+ {video 064x048+066+438 9} \
+ {video 064x048+066+520 9} \
+ {video 064x048+066+602 9} \
+ {video 064x048+066+684 9} \
+ {video 064x048+132+192 9} \
+ {video 064x048+132+274 9} \
+ {video 064x048+132+356 9} \
+ {video 064x048+132+438 9} \
+ {video 064x048+132+520 9} \
+ {video 064x048+132+602 9} \
+ {video 064x048+132+684 9} \
+ {video 064x048+198+192 9} \
+ {video 064x048+198+274 9} \
+ {video 064x048+198+356 9} \
+ {video 064x048+198+438 9} 
+
+Video.layout.ol36hq: \
+ {video 064x048+000+192 6} \
+ {video 064x048+000+274 6} \
+ {video 064x048+000+356 6} \
+ {video 064x048+000+438 6} \
+ {video 064x048+000+520 6} \
+ {video 064x048+000+602 6} \
+ {video 064x048+000+684 6} \
+ {video 064x048+066+192 6} \
+ {video 064x048+066+274 6} \
+ {video 064x048+066+356 6} \
+ {video 064x048+066+438 6} \
+ {video 064x048+066+520 6} \
+ {video 064x048+066+602 6} \
+ {video 064x048+066+684 6} \
+ {video 064x048+132+192 6} \
+ {video 064x048+132+274 6} \
+ {video 064x048+132+356 6} \
+ {video 064x048+132+438 6} \
+ {video 064x048+132+520 6} \
+ {video 064x048+132+602 6} \
+ {video 064x048+132+684 6} \
+ {video 064x048+198+192 6} \
+ {video 064x048+198+274 6} \
+ {video 064x048+198+356 6} \
+ {video 064x048+198+438 6} \
+ {video 064x048+198+520 6} \
+ {video 064x048+198+602 6} \
+ {video 064x048+198+684 6} \
+ {video 064x048+198+018 6} \
+ {video 064x048+198+110 6} \
+ {video 064x048+264+018 6} \
+ {video 064x048+264+110 6} \
+ {video 064x048+264+192 6} \
+ {video 064x048+264+274 6} \
+ {video 064x048+264+356 6} \
+ {video 064x048+264+438 6} 
+
+
+#--------------------------------------------------------------------
+
+    
+########################################################################
+#
+#  ISABEL: A group collaboration tool for the Internet
+#  Copyright (C) 2009 Agora System S.A.
+#  
+#  This file is part of Isabel.
+#  
+#  Isabel is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#  
+#  Isabel is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+# 
+#  You should have received a copy of the GNU General Public License
+#  along with Isabel.  If not, see <http://www.gnu.org/licenses/>.
+#
+########################################################################
+
+#--------------------------------------------------------------------
+# INTERACTION MODE: onemode
+#--------------------------------------------------------------------
+
+onemode.whatis:    imode
+onemode.Audio:     -active 1 \
+                   -codec "gsm-32KHz" \
+                   -maxbw 300
+onemode.Video:     -active 1 -layout lone-640 \
+                   -otherlayout {ol3lq ol4lq ol5lq ol10lq ol25lq ol36lq}
+
+# --------------------------------------------------------------------
+
+Video.layout.lone-640: \
+ {video 640x480+240+160 512} 
+
+Video.layout.lone-768: \
+ {video 768x576+155+120 512} 
+
+# --------------------------------------------------------------------
+   
+########################################################################
+#
+#  ISABEL: A group collaboration tool for the Internet
+#  Copyright (C) 2009 Agora System S.A.
+#  
+#  This file is part of Isabel.
+#  
+#  Isabel is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#  
+#  Isabel is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+# 
+#  You should have received a copy of the GNU General Public License
+#  along with Isabel.  If not, see <http://www.gnu.org/licenses/>.
+#
+########################################################################
+
+#--------------------------------------------------------------------
+# INTERACTION MODE: chatmode
+#--------------------------------------------------------------------
+
+chatmode.whatis:       imode
+chatmode.Audio:        -active 1 \
+                       -codec "gsm-32KHz" \
+                       -maxbw 300
+chatmode.Video:        -active 1 \
+                       -layout {chat2 chat3 chat4 chat5 chat9 chat25 chat36}
+
+# --------------------------------------------------------------------
+
+Video.layout.chat2: \
+ {videomq 448x336+026+184 550} \
+ {videomq 448x336+522+184 550}
+
+
+Video.layout.chat3: \
+ {videomq 256x192+358+039 200} \
+ {videomq 256x192+154+371 200} \
+ {videomq 256x192+564+371 200}
+
+
+Video.layout.chat4: \
+ {videomq 256x192+154+039 200} \
+ {videomq 256x192+564+039 200} \
+ {videomq 256x192+154+371 200} \
+ {videomq 256x192+564+371 200}
+
+
+Video.layout.chat5: \
+ {videomq 256x192+019+064 150} \
+ {videomq 256x192+357+064 150} \
+ {videomq 256x192+695+064 150} \
+ {videomq 256x192+019+378 150} \
+ {videomq 256x192+357+378 150}
+
+
+Video.layout.chat9: \
+ {videomq 192x144+090+013 80} \
+ {videomq 192x144+384+013 80} \
+ {videomq 192x144+678+013 80} \
+ {videomq 192x144+090+243 80} \
+ {videomq 192x144+384+243 80} \
+ {videomq 192x144+678+243 80} \
+ {videomq 192x144+090+474 80} \
+ {videomq 192x144+384+474 80} \
+ {videomq 192x144+678+474 80}
+
+
+Video.layout.chat25: \
+ {videomq 128x096+019+146 33} \
+ {videomq 128x096+224+146 33} \
+ {videomq 128x096+429+146 33} \
+ {videomq 128x096+637+146 33} \
+ {videomq 128x096+838+146 33} \
+ {videomq 128x096+019+286 33} \
+ {videomq 128x096+224+286 33} \
+ {videomq 128x096+429+286 33} \
+ {videomq 128x096+637+286 33} \
+ {videomq 128x096+838+286 33} \
+ {videomq 128x096+019+428 33} \
+ {videomq 128x096+224+428 33} \
+ {videomq 128x096+429+428 33} \
+ {videomq 128x096+637+428 33} \
+ {videomq 128x096+838+428 33} \
+ {videomq 128x096+019+005 33} \
+ {videomq 128x096+224+005 33} \
+ {videomq 128x096+429+005 33} \
+ {videomq 128x096+637+005 33} \
+ {videomq 128x096+838+005 33} \
+ {videomq 128x096+019+568 33} \
+ {videomq 128x096+224+568 33} \
+ {videomq 128x096+429+568 33} \
+ {videomq 128x096+637+568 33} \
+ {videomq 128x096+838+568 33}
+
+
+Video.layout.chat36: \
+ {videomq 128x096+023+004 23} \
+ {videomq 128x096+193+004 23} \
+ {videomq 128x096+363+004 23} \
+ {videomq 128x096+533+004 23} \
+ {videomq 128x096+703+004 23} \
+ {videomq 128x096+873+004 23} \
+ {videomq 128x096+023+132 23} \
+ {videomq 128x096+193+132 23} \
+ {videomq 128x096+363+132 23} \
+ {videomq 128x096+533+132 23} \
+ {videomq 128x096+703+132 23} \
+ {videomq 128x096+873+132 23} \
+ {videomq 128x096+023+260 23} \
+ {videomq 128x096+193+260 23} \
+ {videomq 128x096+363+260 23} \
+ {videomq 128x096+533+260 23} \
+ {videomq 128x096+703+260 23} \
+ {videomq 128x096+873+260 23} \
+ {videomq 128x096+023+388 23} \
+ {videomq 128x096+193+388 23} \
+ {videomq 128x096+363+388 23} \
+ {videomq 128x096+533+388 23} \
+ {videomq 128x096+703+388 23} \
+ {videomq 128x096+873+388 23} \
+ {videomq 128x096+023+516 23} \
+ {videomq 128x096+193+516 23} \
+ {videomq 128x096+363+516 23} \
+ {videomq 128x096+533+516 23} \
+ {videomq 128x096+703+516 23} \
+ {videomq 128x096+873+516 23} \
+ {videomq 128x096+023+644 23} \
+ {videomq 128x096+193+644 23} \
+ {videomq 128x096+363+644 23} \
+ {videomq 128x096+533+644 23} \
+ {videomq 128x096+703+644 23} \
+ {videomq 128x096+873+644 23} 
+
+# --------------------------------------------------------------------
+
+########################################################################
+#
+#  ISABEL: A group collaboration tool for the Internet
+#  Copyright (C) 2009 Agora System S.A.
+#  
+#  This file is part of Isabel.
+#  
+#  Isabel is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#  
+#  Isabel is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+# 
+#  You should have received a copy of the GNU General Public License
+#  along with Isabel.  If not, see <http://www.gnu.org/licenses/>.
+#
+########################################################################
+
+#--------------------------------------------------------------------
+# INTERACTION MODE: quesmode
+#--------------------------------------------------------------------
+
+quesmode.whatis:      imode
+quesmode.Audio:       -active 1 \
+                      -codec "gsm-32KHz" \
+                      -maxbw 300
+quesmode.Questions:   -active 1 \
+                      -resetlayout lresetquestions -resetothermap 0 \
+                      -layout lquestions -othermap 0 \
+                      -setaudio 0
+quesmode.Video:       -active 1 -skip 1
+
+#--------------------------------------------------------------------
+
+Video.layout.lresetquestions: \
+ {video 320x240+269+230 300}
+
+Video.layout.lquestions: \
+ {video 320x240+653+230 300} \
+ {video 320x240+269+230 300}
+
+#--------------------------------------------------------------------
+
+########################################################################
+#
+#  ISABEL: A group collaboration tool for the Internet
+#  Copyright (C) 2009 Agora System S.A.
+#  
+#  This file is part of Isabel.
+#  
+#  Isabel is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#  
+#  Isabel is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+# 
+#  You should have received a copy of the GNU General Public License
+#  along with Isabel.  If not, see <http://www.gnu.org/licenses/>.
+#
+########################################################################
+
+#--------------------------------------------------------------------
+# INTERACTION MODE: vgamode
+#--------------------------------------------------------------------
+
+vgamode.whatis:    imode
+
+vgamode.Audio:     -active 1 \
+                   -codec "gsm-32KHz" \
+                   -maxbw 300
+
+vgamode.Video:     -active 1 \
+                   -layout lteacher_vgamode \
+                   -otherlayout {ol3hq ol4hq ol5hq ol10hq ol25hq ol36hq} \
+                   -vga.layout lvgamode
+
+# --------------------------------------------------------------------
+
+Video.layout.lteacher_vgamode: \
+ {video 192x144+000+000 400}
+
+# --------------------------------------------------------------------
+
+Video.vga.layout.lvgamode: {vga 800x600+200+0 350}
+
+# --------------------------------------------------------------------
+
+########################################################################
+#
+#  ISABEL: A group collaboration tool for the Internet
+#  Copyright (C) 2009 Agora System S.A.
+#  
+#  This file is part of Isabel.
+#  
+#  Isabel is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#  
+#  Isabel is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+# 
+#  You should have received a copy of the GNU General Public License
+#  along with Isabel.  If not, see <http://www.gnu.org/licenses/>.
+#
+########################################################################
+
+#--------------------------------------------------------------------
+# INTERACTION MODE: doccameramode
+#--------------------------------------------------------------------
+
+doccamera.whatis:      imode
+doccamera.Audio:       -active 1 \
+                       -codec "gsm-32KHz" \
+                       -maxbw 300
+
+doccamera.Video:       -active 1 -layout ldoccamera-768 \
+                       -otherlayout {ol3lq ol4lq ol5lq ol10lq ol25lq ol36lq}
+
+# --------------------------------------------------------------------
+
+Video.layout.ldoccamera-640: \
+ {cameradoc 640x480+400+100 512}
+
+Video.layout.ldoccamera-768: \
+ {cameradoc 768x576+210+025 512}
+
+# --------------------------------------------------------------------
+
+########################################################################
+#
+#  ISABEL: A group collaboration tool for the Internet
+#  Copyright (C) 2009 Agora System S.A.
+#  
+#  This file is part of Isabel.
+#  
+#  Isabel is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#  
+#  Isabel is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+# 
+#  You should have received a copy of the GNU General Public License
+#  along with Isabel.  If not, see <http://www.gnu.org/licenses/>.
+#
+########################################################################
+
+#--------------------------------------------------------------------
+# INTERACTION MODE: notepadmode
+#--------------------------------------------------------------------
+
+notepadmode.whatis:    imode
+notepadmode.Audio:     -active 1 \
+                       -codec "gsm-32KHz" \
+                       -maxbw 300
+notepadmode.Notepad:   -active 1
+notepadmode.Video:     -active 1 -layout lnotepadmode -otherlayout {ol3hq ol4hq ol5hq ol10hq ol25hq ol36hq}
+
+# --------------------------------------------------------------------
+
+Video.layout.lnotepadmode: \
+ {video 192x144+000+000 400}
+
+# --------------------------------------------------------------------
+
+########################################################################
+#
+#  ISABEL: A group collaboration tool for the Internet
+#  Copyright (C) 2009 Agora System S.A.
+#  
+#  This file is part of Isabel.
+#  
+#  Isabel is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#  
+#  Isabel is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+# 
+#  You should have received a copy of the GNU General Public License
+#  along with Isabel.  If not, see <http://www.gnu.org/licenses/>.
+#
+########################################################################
+
+#--------------------------------------------------------------------
+# INTERACTION MODE: whiteboardmode
+#--------------------------------------------------------------------
+
+
+whiteboardmode.whatis:       imode
+whiteboardmode.Audio:        -active 1 \
+                             -codec "gsm-32KHz" \
+                             -maxbw 300
+whiteboardmode.Whiteboard:   -active 1    
+whiteboardmode.Video:        -active 1 -layout lwbmode -otherlayout {ol3hq ol4hq ol5hq ol10hq ol25hq ol36hq}
+
+# --------------------------------------------------------------------
+
+Video.layout.lwbmode: \
+ {video 192x144+000+000 400}
+
+# --------------------------------------------------------------------
+
+########################################################################
+#
+#  ISABEL: A group collaboration tool for the Internet
+#  Copyright (C) 2009 Agora System S.A.
+#  
+#  This file is part of Isabel.
+#  
+#  Isabel is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#  
+#  Isabel is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+# 
+#  You should have received a copy of the GNU General Public License
+#  along with Isabel.  If not, see <http://www.gnu.org/licenses/>.
+#
+########################################################################
+
+#--------------------------------------------------------------------
+# INTERACTION MODE: appsharingmode
+#--------------------------------------------------------------------
+
+appsharingmode.whatis: imode
+
+appsharingmode.Audio: -active 1 \
+                  -codec "gsm-32KHz" \
+                  -maxbw 300
+
+appsharingmode.Video:  -active 1 \
+                   -layout lappsharingmode \
+                   -otherlayout {ol3lq ol4lq ol5lq ol10lq ol25lq ol36lq}
+
+appsharingmode.VNC: -active 1 \
+                    -layout lappsharingmode \
+                    -shdisplaycodec  "MPEG-4 -qlty 50" \
+                    -bw     400 \
+                    -capturearea 800x600+200+1 0 1
+
+# --------------------------------------------------------------------
+
+Video.layout.lappsharingmode: \
+ {video 192x144+000+000 250}
+
+# --------------------------------------------------------------------
+
+VNC.viewerlayout.lappsharingmode:    +200+1 0 1
+
+# --------------------------------------------------------------------
+
+
+
+
+
+
+
+

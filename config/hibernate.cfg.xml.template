@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-configuration PUBLIC
+        "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+
+<hibernate-configuration>
+
+    <session-factory>
+
+        <!-- Database connection settings -->
+        <property name="connection.driver_class">com.mysql.jdbc.Driver</property>
+        <property name="connection.url">jdbc:mysql://MYSQLSERVER/cmevents?autoReconnect=true</property>
+
+        <!-- <property name="connection.driver_class">com.mysql.jdbcDriver</property>
+        <property name="connection.url">jdbc:hsqldb:mysql://localhost/cmevents?autoReconnect=true</property> -->
+        <property name="connection.username">USER</property>
+        <property name="connection.password">PASSWORD</property>
+
+        <!-- JDBC connection pool (use the built-in) -->
+        <!--<property name="connection.pool_size">1</property>-->
+        <property name="c3p0.min_size">5</property>
+        <property name="c3p0.max_size">20</property>
+        <property name="c3p0.timeout">1800</property>
+        <property name="c3p0.max_statements">50</property>
+        <property name="connection.provider_class">org.hibernate.connection.C3P0ConnectionProvider</property>
+
+        <!-- SQL dialect -->
+        <!-- <property name="dialect">org.hibernate.dialect.HSQLDialect</property>  -->
+        <property name="dialect">org.hibernate.dialect.MySQLDialect</property>
+
+        <!-- Enable Hibernate's automatic session context management -->
+        <property name="current_session_context_class">thread</property>
+
+        <!-- Disable the second-level cache  -->
+        <property name="cache.provider_class">org.hibernate.cache.NoCacheProvider</property>
+
+        <!-- Echo all executed SQL to stdout -->
+        <property name="show_sql">false</property>
+
+        <property name="hbm2ddl.auto">update</property>
+
+                <!--  Clases que se mapearan en entradas dentro de la Base de Datos -->
+                <mapping class = "isabel.component.conference.data.Conference" />
+                <mapping class = "isabel.component.conference.data.Session" />
+                <mapping class = "isabel.component.conference.data.IsabelMachine" />
+    </session-factory>
+
+</hibernate-configuration>

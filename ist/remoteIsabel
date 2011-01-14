@@ -1,0 +1,32 @@
+#!/bin/bash
+
+if [ "$#" -lt 3 ] ; then
+   echo "Usage: remoteIsabel <user> <host> <action> [\"PARAMETERS\""] [igw_base_url]
+   echo "action: START or STOP"
+   exit 1
+fi
+
+USER=$1
+HOST=$2
+ACTION=$3
+PARAMETERS=$4
+
+IST_DIR=$( dirname $0 )
+cd $IST_DIR
+
+# Copiamos los archivos de arranque
+scp -o "StrictHostKeyChecking no" -r -q ../ist $USER@$HOST:.
+
+if [ "$#" -eq 5 ] ; then
+	
+	IGW_OUTPUT_DIR=/var/www/live/
+	IGW_BASE_URL=$5
+	ssh -o "StrictHostKeyChecking no" root@$HOST "chmod u+x /home/$USER/ist/sitemount.sh;/home/isabel/ist/sitemount.sh mount $IGW_BASE_URL $IGW_OUTPUT_DIR"
+fi
+
+# Ejecutamos
+if [ $ACTION == "START" ]; then
+        ssh -o "StrictHostKeyChecking no" $USER@$HOST "chmod u+x ist/ist_launch ist/ist_kill;ist/ist_launch $PARAMETERS"
+elif [ $ACTION == "STOP" ]; then
+        ssh -o "StrictHostKeyChecking no" $USER@$HOST "chmod u+x ist/ist_launch ist/ist_kill;ist/ist_kill"
+fi

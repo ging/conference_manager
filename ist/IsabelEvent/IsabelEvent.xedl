@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<EDL>
+    <VERSION>1.8</VERSION>
+    <SESSION>
+        <ID>#EventID#</ID>
+        <ACCESS_CONTROL></ACCESS_CONTROL>
+        <DELIVERY_PLATFORM>Isabel 4.12.beta9 1</DELIVERY_PLATFORM>
+        <SERVICE>
+            <SERVICE-NAME>#ACTIVITY#</SERVICE-NAME>
+            <SERVICE-QUALITY>#QUALITY#</SERVICE-QUALITY>
+        </SERVICE>
+        <session-info>
+            <OPEN_SESSION>true</OPEN_SESSION>
+        </session-info>
+    </SESSION>
+    <URL></URL>
+</EDL>
