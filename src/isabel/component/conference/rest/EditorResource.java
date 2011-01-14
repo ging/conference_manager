@@ -98,7 +98,7 @@ public class EditorResource extends ServerResource {
 		if (heightParam != null)
 			height = heightParam.getValue();
 		String metadataURL = ConfigurationParser.metadataPath + "/" + conference.getId() + "/" + 
-							conference.getId() + "_" + session.getId() + ".xml";
+							conference.getId() + "_" + session.getId() + ".smil";
 		String html = "<embed name=\"player\" allowfullscreen=\"true\" src=\""
 				+ ConfigurationParser.editorSWF
 				+ "?metadataurl="

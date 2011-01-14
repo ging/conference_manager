@@ -121,7 +121,7 @@ public class PlayerResource extends ServerResource {
 					+ width + "\" />";
 			} else {
 				log.info("Showing new video player " + conference.getStartTime() + " -->" + DateFormat.getDateInstance(DateFormat.SHORT).parse("11/25/2010"));
-				String metadataURL = ConfigurationParser.metadataPath + "/" + conference.getId() + "/" + conference.getId() + "_" + session.getId() + ".xml";
+				String metadataURL = ConfigurationParser.metadataPath + "/" + conference.getId() + "/" + conference.getId() + "_" + session.getId() + ".smil";
 				html+="<embed name=\"player\" allowfullscreen=\"true\" src=\""
 					+ ConfigurationParser.recordSWF + "?file=" + metadataURL + "&resizing=true&allowfullscreen=true\" height=\"" + height 
 					+ "\" wmode=\"transparent\" width=\""
