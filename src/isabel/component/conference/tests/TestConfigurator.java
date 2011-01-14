@@ -13,7 +13,7 @@ public class TestConfigurator {
 	
 	public static void initializeAll() {
 		// Iniciamos el programador de tareas de arranque y parada.
-		JobScheduler.configFile = "config/quartz2test.properties";
+		JobScheduler.configFile = "config/quartz2.properties";
 		IsabelScheduler scheduler = IsabelScheduler.getInstance();
 		
 		try {
