@@ -29,7 +29,7 @@ public class HibernateUtil {
 			if (!debug) {
 				sessionFactory = new AnnotationConfiguration().configure().buildSessionFactory();
 			} else {
-				sessionFactory = new AnnotationConfiguration().configure("hibernate-test.cfg.xml").buildSessionFactory();
+				sessionFactory = new AnnotationConfiguration().configure().buildSessionFactory();
 			}
 		}
 		return sessionFactory;
