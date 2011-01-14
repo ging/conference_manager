@@ -1,0 +1,10 @@
+#! /bin/bash
+export DISPLAY=:0
+/usr/local/isabel/bin/isabel_cleanup
+sleep 1
+/usr/local/isabel/bin/isabel_cleanup
+sleep 2
+/usr/bin/killall -q Xvnc Xtightvnc
+/bin/rm -f /tmp/.X33-lock 
+/bin/rm -f /tmp/.X11-unix/X33
+echo FINITO2

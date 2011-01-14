@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ====================================================================== 
+     13/01/2011 16:16:11                                                        
+
+     Conference Manager    
+     Videoconference resource manager
+                   
+     jcervino@dit.upm.es                                                                
+     ====================================================================== -->
+<project name="Conference Manager" default="test">
+    <description>
+            Videoconference resource manager
+    </description>
+	
+	<property name="home" value="." />
+	<property name="dest.dir" value="${home}/build" />
+	<property name="dest.tmp" value="${home}/tmp" />
+	<property name="dest.dir.classes" value="${dest.dir}/classes" />
+	<property name="dest.dir.lib" value="${dest.dir}/lib" />
+		
+	<property name="sql.path" value="${home}/utils" />
+	<property name="sql.user" value="USERNAME" />
+	<property name="sql.pass" value="PASSWORD" />
+	
+	<path id="build.class.path">
+		<fileset dir="${home}/lib">
+			<include name="*.jar" />
+		</fileset>
+	</path> 
+	
+	<path id="test.class.path">
+		<pathelement location="${dest.dir.classes}" />
+		<pathelement location="${home}/config/" /> 
+	</path>
+
+	<target name="clean">
+		<delete dir="${dest.dir}" />
+			<delete dir="${dest.tmp}" />
+	</target>
+	
+	<target name="prepare">
+		<mkdir dir="${dest.dir}" />
+		<mkdir dir="${dest.tmp}" />
+		<mkdir dir="${dest.dir.classes}" />
+	</target>
+
+    <!-- ================================= 
+          target: compile              
+         ================================= -->
+    <target name="compile" depends="clean,prepare" description="Videoconference resource manager">
+    	<javac srcdir="${home}/src" destdir="${dest.dir.classes}" >
+    		<classpath refid="build.class.path" />
+    	</javac>
+    </target>
+	
+	<!-- ================================= 
+          target: prepareMySQL              
+         ================================= -->
+	<target name="createTestDBs" description="Creates Test DBs">
+		<sql driver="com.mysql.jdbc.Driver"
+		       url="jdbc:mysql://127.0.0.1/mysql"
+		       userid="${sql.user}" password="${sql.pass}" >
+		    <classpath refid="build.class.path" />
+		    <transaction  src="${sql.path}/createTestDB.sql"/>
+		 </sql>
+	</target>
+		
+		
+    <target name="prepareCMEventsTestDB" depends="createTestDBs" description="Prepares MySQL database">
+    	<!--<sql driver="com.mysql.jdbc.Driver"
+    	       url="jdbc:mysql://127.0.0.1/cmeventstest?autoReconnect=true"
+    	       userid="${sql.user}" password="${sql.pass}">
+    	    <classpath refid="build.class.path" />
+    	    <transaction  src="${sql.path}/db_structure.sql"/>
+    	  </sql>-->
+    </target>
+
+	<target name="prepareQuartzTestDB" depends="createTestDBs" description="Prepares MySQL database">
+    	<sql driver="com.mysql.jdbc.Driver"
+	   			url="jdbc:mysql://127.0.0.1/cmquartztest?autoReconnect=true"
+	   			userid="${sql.user}" password="${sql.pass}">
+			<classpath refid="build.class.path" />
+			<transaction  src="${sql.path}/tables_hsqldb.sql"/>
+	  	</sql>
+    </target>
+
+	
+	<!-- ================================= 
+          target: test              
+         ================================= -->
+    <target name="test" depends="compile, prepareCMEventsTestDB, prepareQuartzTestDB" description="description">
+    	<junit fork="yes" printsummary="true">
+    		<jvmarg value="-Dlogback.configurationFile=config/logbacktest.xml"/>
+    		<classpath refid="test.class.path" />
+    		<classpath refid="build.class.path" />
+    		<test name="isabel.component.conference.tests.ConferenceManagerTestSuite" todir="tmp/"/>
+			<formatter type="xml"/>
+    	</junit>
+		<!--
+		<junitreport todir="tmp">
+      		<fileset dir="tmp/"/>
+      		<report todir="test-reports"/>
+    	</junitreport>
+    	-->
+    </target>
+
+
+</project>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<EDL>
+    <VERSION>1.8</VERSION>
+    <site-description>
+        <SITE>
+            <site-identification>
+                <ID>#NAME#</ID>
+                <PUBLIC_NAME>#NAME#.DIT</PUBLIC_NAME>
+                <SITE_ADDRESS>#IP_ADDR#</SITE_ADDRESS>
+            </site-identification>
+            <SITE-ROLE>#ROLE#</SITE-ROLE>
+            #CONNECTION_MODE#
+            <NETWORK-ACCESS>
+                <Ethernet>true</Ethernet>
+            </NETWORK-ACCESS>
+            <CONTROL-CAPABILITIES>full</CONTROL-CAPABILITIES>
+            <media-control>
+                <DEFAULT_CTRL></DEFAULT_CTRL>
+                <APP_SHARING_CTRL></APP_SHARING_CTRL>
+                <AUDIO_CTRL></AUDIO_CTRL>
+                <DATA_CTRL></DATA_CTRL>
+                <VIDEO_CTRL></VIDEO_CTRL>
+            </media-control>
+            <SITE_ADDITIONAL_PARAMS>
+                <ISABEL_AUDIOMIXER>true</ISABEL_AUDIOMIXER>
+                <ISABEL_CTRL_SITES/>
+                <ISABEL_AUDIO_BYPASS/>
+                <ISABEL_GWSIP_URI/>
+                <ISABEL_SIP_REGISTER_HOST/>
+            </SITE_ADDITIONAL_PARAMS>
+        </SITE>
+    </site-description>
+    <URL></URL>
+</EDL>

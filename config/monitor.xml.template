@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+	<general
+		debug="true"
+		scriptsStartDelay="1000"
+		scriptsPath="monitoringScripts/"
+		logsPeriod="300000"
+		emailTo="EMAIL_TO"
+		emailFrom="EMAIL_FROM"
+		smtpServer="SMTP_SERVER"
+		/>
+
+	<agentType
+		name="Node"
+		script="checkNode.sh"
+		period="180000"
+		>
+		<code code="200" message="Ok."/>
+		<code code="500" message="Host doesn't respond to ping."/>
+	</agentType>
+
+	<agentType
+		name="Isabel"
+		script="checkIsabel.sh"
+		period="300000"
+		>
+		<code code="200" message="Ok."/>
+		<code code="500" message="Isabel not running."/>
+	</agentType>
+	
+	<agentType
+		name="IGW"
+		script="checkIGW.sh"
+		period="300000"
+		>
+		<code code="200" message="Ok."/>
+		<code code="500" message="Isabel not running."/>
+	</agentType>
+	
+	<agentType
+		name="Venus"
+		script="checkVenus.sh"
+		period="300000"
+		>
+		<code code="200" message="Ok."/>
+		<code code="400" message="Could not connect to agent."/>
+		<code code="500" message="VenusRESTGW not running."/>
+		<code code="501" message="FMS not running."/>
+		<code code="502" message="FMS problems with tunnels."/>
+		<code code="503" message="MP4Processor not running."/>
+	</agentType>
+	
+	<agentType
+		name="Red5"
+		script="checkRed5.sh"
+		period="300000"
+		>
+		<code code="200" message="Ok."/>
+		<code code="500" message="Isabel not running."/>
+	</agentType>
+	
+	<agentType
+		name="FlowVenus"
+		script="checkVenusStream.sh"
+		period="300000"
+		>
+		<code code="200" message="Ok."/>
+		<code code="500" message="Isabel not running."/>
+	</agentType>
+	
+	<agentType
+		name="FlowRed5"
+		script="checkRed5Stream.sh"
+		period="300000"
+		>
+		<code code="200" message="Ok."/>
+		<code code="500" message="Isabel not running."/>
+	</agentType>
+	
+	<agentType
+		name="Session"
+		script="checkSession.sh"
+		period="300000"
+		>
+		<code code="200" message="Ok."/>
+		<code code="500" message="Isabel not running."/>
+	</agentType>
+	
+</configuration>

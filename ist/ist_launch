@@ -1,0 +1,198 @@
+#! /bin/bash
+export DISPLAY=:0
+ISABEL_SESSIONS_DIR=$HOME/.isabel/sessions/4.11
+ISABEL_LOGS_DIR=$HOME/.isabel/logs
+
+#-----------------------------------------------------
+# Command line options.
+#-----------------------------------------------------
+if [ "$#" -lt 5 ] ; then
+   echo "Usage: ist_launch sessionName sessionType quality siteType siteName [masterip] [param=value]..."
+   echo "sessionType: meeting.act class.act ..."
+   echo "quality: [512K|1M|2M...]"
+   echo "siteType: [MASTER|FLASH|MASTER_FLASH|SIP|MASTER_SIP|SPY|MASTER_SPY|MCU]"
+   exit 1
+fi
+
+SESSION_NAME=$1
+SESSION_TYPE=$2
+SESSION_QLTY=$3
+SITE_TYPE=$4
+SITE_NAME=$5
+
+#---------------------------------------------------
+# CALCULATE BW VARIABLES (WISE)
+#--------------------------------------------------
+regex='([0-9]+)K'
+regex2='([0-9]+)M'
+if [[ $SESSION_QLTY =~ $regex ]];then
+	SESSION_QLTY2=${BASH_REMATCH[1]}
+fi
+if [[ $SESSION_QLTY =~ $regex2 ]];then
+	SESSION_QLTY2=${BASH_REMATCH[1]}000
+fi
+
+#---------------------------------------------------
+# GET TUNNEL IP
+#---------------------------------------------------
+TUN_IP=$(ip addr show tun0 | grep inet)
+TUN_IP=( $TUN_IP )
+TUN_IP=${TUN_IP[1]}
+
+# --------------------------------------------------
+# Create sessions dir tree
+# --------------------------------------------------
+
+if [ ! -f $ISABEL_SESSIONS_DIR/setup ]; then
+    mkdir -p  $ISABEL_SESSIONS_DIR/setup
+fi
+if [ ! -f $ISABEL_SESSIONS_DIR/master ]; then
+    mkdir -p  $ISABEL_SESSIONS_DIR/master
+fi
+if [ ! -f $ISABEL_SESSIONS_DIR/remote ]; then
+    mkdir -p  $ISABEL_SESSIONS_DIR/remote
+fi
+MASTER_DIR=$ISABEL_SESSIONS_DIR/master
+REMOTE_DIR=$ISABEL_SESSIONS_DIR/remote
+SETUP_DIR=$ISABEL_SESSIONS_DIR/setup
+
+#-----------------------------------------------------
+# MASTER_IP Resolver
+#-----------------------------------------------------
+function getIP {
+        MASTER_IP=$1
+        regex=' ([0-9]{1,3}\.){3}[0-9]{1,3}$'
+        algo=`host $MASTER_IP`
+        if [[ $algo =~ $regex ]]; then
+                MASTER_IP=`echo ${BASH_REMATCH}`;
+        fi
+}
+
+
+#-----------------------------------------------------
+# SELECT ROLE
+#-----------------------------------------------------
+if [ $SITE_TYPE == "MASTER" ]; then
+		XML_DIR=$MASTER_DIR
+		ROLE=MCU
+	    USE_FLOW=0
+fi
+if [ $SITE_TYPE == "MASTER_FLASH" ]; then
+        XML_DIR=$MASTER_DIR
+        ROLE=FlashGateway
+        USE_FLOW=0
+fi
+if [ $SITE_TYPE == "MASTER_SIP" ]; then
+        XML_DIR=$MASTER_DIR
+        ROLE=SipGateway
+        USE_FLOW=0
+fi
+if [ $SITE_TYPE == "MASTER_SPY" ]; then
+        XML_DIR=$MASTER_DIR
+        ROLE=Interactive
+        USE_FLOW=0
+fi
+if [  $SITE_TYPE == "SPY" ]; then
+		XML_DIR=$REMOTE_DIR
+		ROLE=Interactive
+	    getIP $6
+	    USE_FLOW=1
+		CON_MODE='<CONNECTION-MODE><mcu><MCU_ADDRESS>'$MASTER_IP'<\/MCU_ADDRESS><\/mcu><\/CONNECTION-MODE>'
+		shift
+fi
+if  [  $SITE_TYPE == "FLASH" ]; then
+        XML_DIR=$REMOTE_DIR
+        ROLE=FlashGateway
+    	getIP $6
+        USE_FLOW=1 
+        CON_MODE='<CONNECTION-MODE><mcu><MCU_ADDRESS>'$MASTER_IP'<\/MCU_ADDRESS><\/mcu><\/CONNECTION-MODE>'
+		shift
+fi
+if  [  $SITE_TYPE == "SIP" ]; then
+        XML_DIR=$REMOTE_DIR
+        ROLE=SipGateway
+    	getIP $6
+        USE_FLOW=1
+        CON_MODE='<CONNECTION-MODE><mcu><MCU_ADDRESS>'$MASTER_IP'<\/MCU_ADDRESS><\/mcu><\/CONNECTION-MODE>'
+        shift
+fi
+if  [  $SITE_TYPE == "MCU" ]; then
+        XML_DIR=$REMOTE_DIR
+        ROLE=MCU
+    	getIP $6
+        USE_FLOW=1 
+        CON_MODE='<CONNECTION-MODE><mcu><MCU_ADDRESS>'$MASTER_IP'<\/MCU_ADDRESS><\/mcu><\/CONNECTION-MODE>'
+	shift
+fi
+
+#-----------------------------------------------------
+# Launch
+#-----------------------------------------------------
+        echo "IST launch"
+
+	rm -rf $XML_DIR/$SESSION_NAME
+	rm -rf $SETUP_DIR/$SESSION_NAME
+    mkdir $XML_DIR/$SESSION_NAME
+    mkdir $SETUP_DIR/$SESSION_NAME
+
+    XEDL_FILE=$XML_DIR/$SESSION_NAME/${SESSION_NAME}.xedl
+    TMP_FILE=$XML_DIR/$SESSION_NAME/${SESSION_NAME}_TMP.xedl
+    LOCAL_FILE=$XML_DIR/$SESSION_NAME/local.xedl
+    CONFIG_FILE=$SETUP_DIR/$SESSION_NAME/config.$SITE_NAME
+
+    IST_DIR=$( dirname $0 )
+	cd $IST_DIR
+    cp IsabelEvent/IsabelEvent.xedl $XEDL_FILE
+    cp IsabelEvent/IsabelEvent_TMP.xedl $TMP_FILE
+    cp IsabelEvent/local.xedl $LOCAL_FILE
+    cp sIsabelEvent/participants $SETUP_DIR/$SESSION_NAME
+    cp sIsabelEvent/service $SETUP_DIR/$SESSION_NAME
+    cp sIsabelEvent/config.Master $CONFIG_FILE
+#SESSION_NAME
+    sed -i 's/#EventID#/'$SESSION_NAME'/g' $XEDL_FILE
+    sed -i 's/#EventID#/'$SESSION_NAME'/g' $TMP_FILE
+    sed -i 's/#EventID#/'$SESSION_NAME'/g' $CONFIG_FILE
+#SESSION_TYPE
+    sed -i 's/#ACTIVITY#/'$SESSION_TYPE'/g' $XEDL_FILE
+    sed -i 's/#ACTIVITY#/'$SESSION_TYPE'/g' $TMP_FILE
+    sed -i 's/#ACTIVITY#/'$SESSION_TYPE'/g' $CONFIG_FILE
+#QUALITY
+    sed -i 's/#QUALITY#/'$SESSION_QLTY'/g' $XEDL_FILE
+    sed -i 's/#QUALITY#/'$SESSION_QLTY'/g' $TMP_FILE
+    sed -i 's/#QUALITY#/'$SESSION_QLTY'/g' $CONFIG_FILE
+
+    sed -i 's/#QUALITY2#/'$SESSION_QLTY2'/g' $CONFIG_FILE
+    sed -i 's/#QUALITY2#/'$SESSION_QLTY2'/g' $CONFIG_FILE
+#ROLE
+    sed -i 's/#ROLE#/'$ROLE'/g' $LOCAL_FILE
+    sed -i 's/#ROLE#/'$ROLE'/g' $TMP_FILE
+    sed -i 's/#ROLE#/'$ROLE'/g' $CONFIG_FILE
+#TUN_IP
+    sed -i 's/#IP_ADDR#/'$TUN_IP'/g' $LOCAL_FILE
+    sed -i 's/#IP_ADDR#/'$TUN_IP'/g' $TMP_FILE
+#NAME
+    sed -i 's/#NAME#/'$SITE_NAME'/g' $LOCAL_FILE
+    sed -i 's/#NAME#/'$SITE_NAME'/g' $TMP_FILE
+    sed -i 's/#NAME#/'$SITE_NAME'/g' $CONFIG_FILE
+#MASTER_IP
+    sed -i 's/#MASTER_IP#/'$MASTER_IP'/g' $CONFIG_FILE
+    sed -i 's/#CONNECTION_MODE#/'$CON_MODE'/g' $LOCAL_FILE
+    sed -i 's/#CONNECTION_MODE#/'$CON_MODE'/g' $TMP_FILE
+#USE_FLOWSERVER
+    sed -i 's/#USE_FLOWSERVER#/'$USE_FLOW'/g' $CONFIG_FILE
+
+#OTHER PARAMETERS
+    while [[ $6 ]]
+    do
+            echo $6 >> $CONFIG_FILE
+            shift
+    done
+    
+#CONFIGURE LOGS
+	SESSION_LOGS=$ISABEL_LOGS_DIR/session.$SESSION_NAME
+	mkdir -p $SESSION_LOGS
+
+    /usr/local/isabel/bin/isabel_launch $SESSION_NAME $SITE_NAME > $SESSION_LOGS/isabel_launch.log
+
+	echo "FINITO"        
+	exit 0

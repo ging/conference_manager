@@ -1,0 +1,31 @@
+#!/bin/bash
+OP=$1
+PREFIX=$2
+VALUE=$3
+DOMAIN=DOMAIN_NAME
+SERVER=SERVER_IP
+TTL=300
+KEYNAME=KEY_NAME
+KEYVALUE=KEY_VALUE
+NSUPDATE=/usr/bin/nsupdate
+
+if [ $OP == "ADD" ] 
+then
+$NSUPDATE -y $KEYNAME:$KEYVALUE  -v <<89END89A
+server $SERVER
+zone $DOMAIN
+update delete $PREFIX.$DOMAIN. CNAME
+update add $PREFIX.$DOMAIN. $TTL CNAME $VALUE
+send
+89END89A
+fi
+
+if [ $OP == "DEL" ] 
+then
+$NSUPDATE -y $KEYNAME:$KEYVALUE  -v <<89END89A
+server $SERVER
+zone $DOMAIN
+update delete $PREFIX.$DOMAIN. CNAME
+send
+89END89A
+fi

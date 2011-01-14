@@ -1,0 +1,17 @@
+org.quartz.scheduler.instanceName = IsabelScheduler
+org.quartz.scheduler.instanceId = 1
+org.quartz.scheduler.rmi.export = false
+org.quartz.scheduler.rmi.proxy = false
+
+org.quartz.threadPool.class = org.quartz.simpl.SimpleThreadPool
+org.quartz.threadPool.threadCount = 5
+org.quartz.jobStore.class = org.quartz.impl.jdbcjobstore.JobStoreTX
+org.quartz.jobStore.useProperties = false
+org.quartz.jobStore.tablePrefix = QRTZ_
+
+org.quartz.jobStore.dataSource = MYSQL
+org.quartz.dataSource.MYSQL.driver = com.mysql.jdbc.Driver
+org.quartz.dataSource.MYSQL.URL = jdbc:mysql://MYSQLSERVER/cmquartz?autoReconnect=true
+org.quartz.dataSource.MYSQL.user = USERNAME
+org.quartz.dataSource.MYSQL.password = PASSWORD
+org.quartz.dataSource.MYSQL.maxConnections = 1

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+	<general
+		debug="false"
+		/>
+		
+	<http
+		hostname="CM_HOSTNAME"
+		port="CM_PORT"
+		/>
+
+	<record
+		url="http://FMS_HOSTNAME:8888/rest/"
+		swf="http://FMS_HOSTNAME/reproductor/mediaplayer.swf"
+		rtmp="rtmp://FMS_HOSTNAME/isabelStore"
+		metadata="rtmp://FMS_HOSTNAME/isabel_events_router"
+		editorSWF="http://FMS_HOSTNAME/editor/TinySmilFirstVideoTrimmer.swf"
+		metadataPath="http://FMS_HOSTNAME/playlists"
+	/>
+
+	<streaming
+		url="rtmp://FMS_HOSTNAME/live/"
+		swf="http://FMS_HOSTNAME/reproductor/mediaplayer.swf"
+	/>
+
+	<web
+		url="rtmp://RED5_HOSTNAME/IsabelWebGWApp/"
+		swf="http://RED5_HOSTNAME/FlaPhoneClient.swf"
+	/>
+
+	<samba
+		file="/etc/samba/smb.conf"
+		root="ROOT_FOLDER"
+		defaultFolder="DEFAULT_FOLDER"
+	/>
+	
+	<sip
+		registerAddress="SER_HOSTNAME"
+		registerPort="SER_PORT"
+		nickName="Isabel Gateway"
+		realm="Isabel"
+		password=" "
+		videoBW="1000"
+	/>
+	
+	<margin
+		conferenceSession="60000"
+		masterGateway="10000"
+	/>
+	
+	<bandwidth
+		isabelSession="1M"
+		webVideo="400000"
+		recordVideo="400000"
+		igwVideo="300"
+		/>
+		
+	<vnc
+		password="VNC_PASSWORD"
+		/>
+		
+	<aws
+		url="https://eu-west-1.ec2.amazonaws.com"
+		serviceKey="AWS_SERVICE_KEY"
+		serviceSecret="AWS_SERVICE_SECRET"
+		isabelAmi="ami-a9507add"
+		vncAmi=""
+		/>
+		
+	<igw
+		url="http://LIVESTREAMING_HOSTNAME/live/"
+		outputDir="/var/www/live"
+		/>
+		
+</configuration>
