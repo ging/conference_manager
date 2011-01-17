@@ -71,7 +71,7 @@ public class WebParticipationResource extends ServerResource {
 		String html = "<embed name=\"player\" allowfullscreen=\"true\" src=\""
 				+ ConfigurationParser.webSWF + "?session=" + conference.getId()
 				+ params + "\" height=\"" + height 
-				+ "\" wmode=\"transparent\" width=\""
+				+ "\" width=\""
 				+ width + "\" />";
 		
 		setStatus(Status.SUCCESS_OK, "OK");

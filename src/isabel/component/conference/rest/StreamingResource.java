@@ -67,14 +67,14 @@ public class StreamingResource extends ServerResource {
 				+ "&autostart=true&bufferlength=3&file="
 				+ ConfigurationParser.streamURL + conference.getId()
 				+ "\" height=\"" + (new Integer(height) + 20)
-				+ "\" wmode=\"transparent\" width=\"" + width + "\" />";
+				+ "\" width=\"" + width + "\" />";
 				*/
 		String html = "";
 		if (type.equalsIgnoreCase("flash")) {
 			html = "<embed name=\"player\" allowfullscreen=\"true\" src=\""
 				+ ConfigurationParser.webSWF + "?session=" + conference.getId()
 				+ "&type=streaming\" height=\"" + height 
-				+ "\" wmode=\"transparent\" width=\""
+				+ "\" width=\""
 				+ width + "\" />";
 		} else if (type.equalsIgnoreCase("ipad")) {
 			html = "<video src=\"" + ConfigurationParser.igwURL + conference.getId() + ".m3u8\" controls autoplay  width=\""

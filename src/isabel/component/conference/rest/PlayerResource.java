@@ -108,7 +108,6 @@ public class PlayerResource extends ServerResource {
 //				+ "&file=mp4:" + filename + ".f4v&resizing=true&allowfullscreen=true'/>"
 //				+ "<param name='quality' value='high'/>"
 //				+ "<param name='bgcolor' value='#000000'/>"
-//				+ "<param name='wmode' value='transparent'/>"
 //				+ "<param name='allowfullscreen' value='true'/>"
 //				+ "</object>";
 		String html = "";
@@ -117,14 +116,14 @@ public class PlayerResource extends ServerResource {
 				log.info("Showing old video player " + conference.getStartTime() + " -->" + DateFormat.getDateInstance(DateFormat.SHORT).parse("11/25/2010"));
 				html += "<embed name=\"player\" allowfullscreen=\"true\" src=\""
 					+ ConfigurationParser.recordSWF + "?streamer=" + ConfigurationParser.recordRTMP + conference.getId()+"&file=mp4:" + filename + ".mp4&resizing=true&allowfullscreen=true\" height=\"" + height 
-					+ "\" wmode=\"transparent\" width=\""
+					+ "\" width=\""
 					+ width + "\" />";
 			} else {
 				log.info("Showing new video player " + conference.getStartTime() + " -->" + DateFormat.getDateInstance(DateFormat.SHORT).parse("11/25/2010"));
 				String metadataURL = ConfigurationParser.metadataPath + "/" + conference.getId() + "/" + conference.getId() + "_" + session.getId() + ".smil";
 				html+="<embed name=\"player\" allowfullscreen=\"true\" src=\""
 					+ ConfigurationParser.recordSWF + "?file=" + metadataURL + "&resizing=true&allowfullscreen=true\" height=\"" + height 
-					+ "\" wmode=\"transparent\" width=\""
+					+ "\" width=\""
 					+ width + "\" />";
 			}
 		} catch (ParseException e) {
