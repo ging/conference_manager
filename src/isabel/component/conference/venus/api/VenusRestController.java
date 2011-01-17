@@ -104,7 +104,6 @@ public class VenusRestController {
 	 * @return true si todo ha ido bien
 	 */
 	public boolean publishRecording(String streamURL, String streamName, String conference, String session) {
-		/* TODO Descomentar
 		Client c = Client.create();
 		
 		WebResource lista = c.resource(venusServer); 
@@ -120,7 +119,6 @@ public class VenusRestController {
 		
 		String s = lista.accept(MediaType.APPLICATION_XML_TYPE).type(MediaType.APPLICATION_XML_TYPE).put(String.class,rec);			
 		log.debug("Response : " + s);
-		*/
 		return true;
 	}
 	
