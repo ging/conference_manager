@@ -104,7 +104,7 @@ public class EditorResource extends ServerResource {
 				+ "?metadataurl="
 				+ metadataURL
 				+ "\" height=\"" + (new Integer(height) + 20)
-				+ "\" wmode=\"transparent\" width=\"" + width + "\" />";
+				+ "\" width=\"" + width + "\" />";
 		return new StringRepresentation(html, MediaType.TEXT_HTML);
 	}
 }
