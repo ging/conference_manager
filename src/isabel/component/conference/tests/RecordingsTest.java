@@ -31,6 +31,7 @@ public class RecordingsTest extends TestCase {
     	ConferenceJob.setManager(new MockManager());
     	ConferenceJob.setVNCManager(new MockVNCManager());
     	SessionJob.setController(new MockController());
+    	TestConfigurator.initializeAll();
     }
     
     /**
@@ -48,7 +49,6 @@ public class RecordingsTest extends TestCase {
 			@Override
 			public boolean startRecording(String streamURL, String streamName,
 					String conference, String session) {
-				System.out.println("Starting recording");
 				received = true;
 				return true;
 			}
