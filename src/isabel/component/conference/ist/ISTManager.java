@@ -1,5 +1,6 @@
 package isabel.component.conference.ist;
 
+import isabel.component.conference.scheduler.jobs.Manager;
 import isabel.component.conference.util.ConfigurationParser;
 import isabel.lib.tasks.Task;
 import isabel.lib.tasks.TaskListener;
@@ -16,7 +17,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Fernando Escribano
  */
-public class ISTManager {
+public class ISTManager implements Manager {
 
 	/**
 	 * Logs de la aplicacion

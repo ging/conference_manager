@@ -11,32 +11,26 @@ import isabel.component.conference.venus.api.VenusRestController;
 import java.net.MalformedURLException;
 import java.util.Date;
 
-import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class StopSessionJob implements Job {
+public class StopSessionJob extends SessionJob {
 
 	/**
 	 * Logs.
 	 */
 	protected static Logger log = LoggerFactory.getLogger(StopSessionJob.class);
 	
-	private Session session;
-	private Conference conference;
-	
 	public StopSessionJob() {
 		super();
 	}
 	
 	public StopSessionJob(Conference conference, Session session) {
-		super();
-		this.session = session;
-		this.conference = conference;
+		super(conference, session);
 	}
-
+	
 	/**
 	 * @see org.quartz.Job#execute(org.quartz.JobExecutionContext)
 	 */
@@ -84,7 +78,8 @@ public class StopSessionJob implements Job {
 		log.info("Sending HTTP request to: " + ConfigurationParser.recordURL + " - " + data);
 
 		try {
-			VenusRestController controller = new VenusRestController(ConfigurationParser.recordURL);
+			if (controller == null)
+				controller = new VenusRestController(ConfigurationParser.recordURL);
 			if (!ConfigurationParser.debug) {
 				controller.stopRecording(ConfigurationParser.streamURL + conference.getId(), "IsabelClient_VIDEO", ""+conference.getId(), ""+session.getId());
 			}
@@ -104,7 +99,8 @@ public class StopSessionJob implements Job {
 		String data = "state: publish; streamURL: " + ConfigurationParser.streamURL + "" + conference.getId() +  "; streamName: IsabelClient_VIDEO; conferenceName: " + conference.getId() + "; sessionName: " + session.getId();
 		log.info("Sending HTTP request to: " + ConfigurationParser.recordURL + " - " + data);
 		try {
-			VenusRestController controller = new VenusRestController(ConfigurationParser.recordURL);
+			if (controller == null)
+				controller = new VenusRestController(ConfigurationParser.recordURL);
 			if (!ConfigurationParser.debug) {
 				controller.publishRecording(ConfigurationParser.streamURL + conference.getId(), "IsabelClient_VIDEO", ""+conference.getId(), ""+session.getId());
 			}

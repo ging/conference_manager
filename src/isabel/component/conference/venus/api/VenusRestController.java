@@ -1,5 +1,6 @@
 package isabel.component.conference.venus.api;
 
+import isabel.component.conference.scheduler.jobs.Controller;
 import isabel.component.conference.venus.api.generated.RecordingType;
 import isabel.component.conference.venus.api.generated.StateType;
 
@@ -22,7 +23,7 @@ import com.sun.jersey.api.client.WebResource;
  * @author pedro
  *
  */
-public class VenusRestController {
+public class VenusRestController implements Controller {
 	
 	/**
 	 * Logs
@@ -143,15 +144,16 @@ public class VenusRestController {
 	}
 	
 	public static void main (String[] args){
-		String streamURL = "rtmp://stream4.dit.upm.es/isabelStore/test4/";
+		String streamURL = "rtmp://stream4.dit.upm.es/isabelStore/test/";
 		String streamName = "IsabelClient_VIDEO";
 		String conference = "test";
-		String session = "test4";
+		String session = "test5";
 		try {
 			VenusRestController venus = new VenusRestController("http://stream4.dit.upm.es:8080/rest");
 			venus.startRecording(streamURL, streamName, conference, session);
 			Thread.sleep(10*1000);
 			venus.stopRecording(streamURL, streamName, conference, session);
+			venus.publishRecording(streamURL, streamName, conference, session);
 
 		} catch (Exception e) {
 			e.printStackTrace();

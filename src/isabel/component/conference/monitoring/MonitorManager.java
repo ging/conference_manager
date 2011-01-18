@@ -83,6 +83,7 @@ public class MonitorManager implements ActionListener {
 	}
 	
 	private void startMonitoring() {
+		if (MonitorConfigurationParser.debug) return;
 		
 		// Starting monitor to check the record machine.
 		try {
@@ -144,6 +145,7 @@ public class MonitorManager implements ActionListener {
 	}
 	
 	public void startConferenceMonitoring(Conference conference) {
+		if (MonitorConfigurationParser.debug) return;
 		try {
 			URL url = null; 
 			

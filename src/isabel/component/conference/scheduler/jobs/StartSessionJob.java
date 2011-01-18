@@ -11,37 +11,31 @@ import isabel.component.conference.venus.api.VenusRestController;
 import java.net.MalformedURLException;
 import java.util.Date;
 
-import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class StartSessionJob implements Job {
+public class StartSessionJob extends SessionJob {
 	
 	/**
 	 * Logs
 	 */
 	protected static Logger log = LoggerFactory.getLogger(StartSessionJob.class);
 	
-	private Conference conference;
-	private Session session;
-	
 	public StartSessionJob() {
 		super();
 	}
 	
 	public StartSessionJob(Conference conference, Session session) {
-		super();
-		this.conference = conference;
-		this.session = session;
+		super(conference, session);
 	}
 	
 	/**
 	 * @see org.quartz.Job#execute(org.quartz.JobExecutionContext)
 	 */
 	public void execute(JobExecutionContext context) throws JobExecutionException {
-		
+		System.out.println("Ejecutando StartSessionJob");
 		// Este metodo se ejecuta en la programacion automatica.
 		Long id = (Long)context.getJobDetail().getJobDataMap().get("conference");
 		conference = ConferenceRegistry.get(id);
@@ -82,7 +76,8 @@ public class StartSessionJob implements Job {
 		log.info("Sending HTTP request to: " + ConfigurationParser.recordURL + " - " + data);
 		
 		try {
-			VenusRestController controller = new VenusRestController(ConfigurationParser.recordURL);
+			if (controller == null)
+				controller = new VenusRestController(ConfigurationParser.recordURL);
 			if (!ConfigurationParser.debug) {
 				controller.startRecording(ConfigurationParser.streamURL + conference.getId(), "IsabelClient_VIDEO",""+ conference.getId(),""+ session.getId());
 			}

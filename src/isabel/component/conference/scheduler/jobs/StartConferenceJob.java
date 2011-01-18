@@ -25,7 +25,6 @@ import java.util.Map;
 
 import javassist.NotFoundException;
 
-import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
@@ -37,7 +36,7 @@ import org.slf4j.LoggerFactory;
  * @author jcervino
  *
  */
-public class StartConferenceJob implements Job {
+public class StartConferenceJob extends ConferenceJob {
 
 	/**
 	 * Logs
@@ -45,16 +44,6 @@ public class StartConferenceJob implements Job {
 	protected static Logger log = LoggerFactory
 			.getLogger(StartConferenceJob.class);
 
-	/**
-	 * Conferencia sobre la que actuaremos.
-	 */
-	private Conference conference;
-
-	/**
-	 * Maquina de master
-	 */
-	private IsabelMachine master;
-	
 	/**
 	 * Inicializa una maquina master.
 	 * 
@@ -66,10 +55,11 @@ public class StartConferenceJob implements Job {
 		master = machine;
 		machine.setIsabelNodeType(IsabelNodeType.MASTER);
 		IsabelMachineRegistry.updateIsabelMachine(machine.getId(), machine);
-		ISTManager ist = new ISTManager();
+		if (manager == null)
+			manager =  new ISTManager();
 
 		try {
-			ist.launchMaster(machine.getHostname(),
+			manager.launchMaster(machine.getHostname(),
 					conference.getSessionType(), SiteType.MASTER, ConfigurationParser.isabelSessionBW,
 					conference.getId() + "", "mcu", null);
 		} catch (IOException e) {
@@ -91,10 +81,11 @@ public class StartConferenceJob implements Job {
 		machine.setIsabelNodeType(IsabelNodeType.MASTER_RECORDING);
 		IsabelMachineRegistry.updateIsabelMachine(machine.getId(), machine);
 		
-		ISTManager ist = new ISTManager();
+		if (manager == null)
+			manager =  new ISTManager();
 		
 		try {
-			ist.launchMasterGatewayFlash(machine.getHostname(), conference.getSessionType(), 
+			manager.launchMasterGatewayFlash(machine.getHostname(), conference.getSessionType(), 
 					"mcuRecording", conference.getId() + "", isabelBW,
 					ConfigurationParser.streamURL + conference.getId(), streamingBW, 
 					H264, ConfigurationParser.metadataURL, vnc.getHostname(), ConfigurationParser.vncPassword, 
@@ -119,10 +110,11 @@ public class StartConferenceJob implements Job {
 		machine.setIsabelNodeType(IsabelNodeType.MASTER_RECORDING_HTTPLIVESTREAMING);
 		IsabelMachineRegistry.updateIsabelMachine(machine.getId(), machine);
 		
-		ISTManager ist = new ISTManager();
+		if (manager == null)
+			manager =  new ISTManager();
 		
 		try {
-			ist.launchMasterGatewayFlashHTTPLiveStreaming(machine.getHostname(), conference.getSessionType(), 
+			manager.launchMasterGatewayFlashHTTPLiveStreaming(machine.getHostname(), conference.getSessionType(), 
 					"mcuRecording", conference.getId() + "", isabelBW,
 					ConfigurationParser.streamURL + conference.getId(), streamingBW, 
 					H264, ConfigurationParser.metadataURL, vnc.getHostname(), ConfigurationParser.vncPassword, 
@@ -146,9 +138,11 @@ public class StartConferenceJob implements Job {
 		machine.setIsabelNodeType(IsabelNodeType.GW_WEB);
 		IsabelMachineRegistry.updateIsabelMachine(machine.getId(), machine);
 		
-		ISTManager ist = new ISTManager();
+		if (manager == null)
+			manager =  new ISTManager();
+		
 		try {
-			ist.launchGatewayFlash(machine.getHostname(), conference
+			manager.launchGatewayFlash(machine.getHostname(), conference
 					.getSessionType(), "gwWeb", conference.getId()+"", master.getHostname(),
 					ConfigurationParser.webURL + conference.getId(), ConfigurationParser.webVideoBW, 
 					false, null, vnc.getHostname(), ConfigurationParser.vncPassword, null);
@@ -169,7 +163,9 @@ public class StartConferenceJob implements Job {
 		machine.setIsabelNodeType(IsabelNodeType.GW_SIP);
 		IsabelMachineRegistry.updateIsabelMachine(machine.getId(), machine);
 		
-		ISTManager ist = new ISTManager();
+		if (manager == null)
+			manager =  new ISTManager();
+		
 		try {
 			String host = machine.getHostname();
 			String siteName = "gwSIP";
@@ -184,7 +180,7 @@ public class StartConferenceJob implements Job {
 			String videoBW = ConfigurationParser.sipVideoBW;
 			String password = ConfigurationParser.sipPassword;
 
-			ist.launchGatewaySIP(host, siteName, conference.getId() + "", masterip, registerAddress,
+			manager.launchGatewaySIP(host, siteName, conference.getId() + "", masterip, registerAddress,
 					registerPort, clientAddress, clientName, clientNickname,
 					realm, password, videoBW, null);
 		} catch (IOException e) {
@@ -204,9 +200,11 @@ public class StartConferenceJob implements Job {
 		machine.setIsabelNodeType(IsabelNodeType.SPY);
 		IsabelMachineRegistry.updateIsabelMachine(machine.getId(), machine);
 		
-		ISTManager ist = new ISTManager();
+		if (manager == null)
+			manager =  new ISTManager();
+		
 		try {
-			ist.launchGatewayFlash(machine.getHostname(), conference
+			manager.launchGatewayFlash(machine.getHostname(), conference
 					.getSessionType(), "spy", conference.getId()+"", master.getHostname(),
 					ConfigurationParser.streamURL, ConfigurationParser.webVideoBW, 
 					false, null, "vncServer", "vncPassword", null);
@@ -222,10 +220,10 @@ public class StartConferenceJob implements Job {
 	 */
 	public void initializeVNC(IsabelMachine vnc) {
 		try {
-			VSTManager vst = new VSTManager();
+			if (vstManager == null) vstManager = new VSTManager();
 			log.info("Conference: " + conference.getName()
 					+ "; New VNC initialized: " + vnc.getHostname());
-			vst.changeSharedFolder(vnc, conference);
+			vstManager.changeSharedFolder(vnc, conference);
 		} catch (Exception e) {
 			log.error("Error changing Samba configuration file: " + e.getLocalizedMessage());
 		}
@@ -281,15 +279,11 @@ public class StartConferenceJob implements Job {
 	 * @param conference
 	 * @throws JobExecutionException
 	 */
-	public void startConference(Conference conference) throws JobExecutionException {
+	public void startConference(Conference conference) {
 		synchronized (StartConferenceJob.class) {
 			
 			this.conference = conference;
 
-			if (conference == null) {
-				throw new JobExecutionException(
-						"Error retrieving conference information");
-			}
 			boolean allocated;
 			// Asociamos las maquinas a la Conferencia.
 			allocated = allocateConference();

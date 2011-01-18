@@ -19,13 +19,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class StopConferenceJob implements Job {
+public class StopConferenceJob extends ConferenceJob {
 	
 	/**
 	 * Logs
@@ -33,19 +32,17 @@ public class StopConferenceJob implements Job {
 	protected static Logger log = LoggerFactory.getLogger(StopConferenceJob.class);
 	
 	/**
-	 * Conferencia sobre la que actuaremos.
-	 */
-	private Conference conference;
-
-	/**
 	 * Para la maquina Spy.
 	 * @param spy
 	 */
 	private void shutdownSpy(IsabelMachine spy) {
 		log.info("Conference: " + conference.getName() + "; Spy " + spy.getHostname() + " shutdown");
-		ISTManager ist = new ISTManager();
+		
+		if (manager == null)
+			manager =  new ISTManager();
+		
 		try {
-			ist.killIsabel(spy.getHostname());
+			manager.killIsabel(spy.getHostname());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -57,9 +54,12 @@ public class StopConferenceJob implements Job {
 	 */
 	private void shutdownIsabel(IsabelMachine isabel) {
 		log.info("Conference: " + conference.getName() + "; Isabel machine " + isabel.getHostname() + " shutdown");
-		ISTManager ist = new ISTManager();
+		
+		if (manager == null)
+			manager =  new ISTManager();
+		
 		try {
-			ist.killIsabel(isabel.getHostname());
+			manager.killIsabel(isabel.getHostname());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
