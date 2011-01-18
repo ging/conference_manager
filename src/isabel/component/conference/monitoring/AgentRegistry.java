@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 public class AgentRegistry {
 	
 	/** Logger object. */
-	protected static Logger log = LoggerFactory.getLogger(MonitorConfigurationParser.class);
+	protected static Logger log = LoggerFactory.getLogger(AgentRegistry.class);
 	
 	private ScheduledThreadPoolExecutor pool = (ScheduledThreadPoolExecutor)Executors.newScheduledThreadPool(5);
 
@@ -59,18 +59,21 @@ public class AgentRegistry {
 				Runtime rt = Runtime.getRuntime();
 
 				try {
+					if (!MonitorConfigurationParser.debug) {
+						Process p = rt.exec(MonitorConfigurationParser.scriptsPath + agent.getType().getScript() + " " + agent.getIp() + " " + agent.getCommand());
 
-					Process p = rt.exec(MonitorConfigurationParser.scriptsPath + agent.getType().getScript() + " " + agent.getIp() + " " + agent.getCommand());
+						InputStreamReader isr = new InputStreamReader(p.getInputStream());
+						BufferedReader reader = new BufferedReader(isr);
 
-					InputStreamReader isr = new InputStreamReader(p.getInputStream());
-					BufferedReader reader = new BufferedReader(isr);
+						String line;
+						while ((line= reader.readLine()) == null);
 
-					String line;
-					while ((line= reader.readLine()) == null);
+						checkStatus(agent, line);
 
-					checkStatus(agent, line);
-
-					reader.close();
+						reader.close();
+					} else {
+						checkStatus(agent, "200");
+					}
 
 				} 
 

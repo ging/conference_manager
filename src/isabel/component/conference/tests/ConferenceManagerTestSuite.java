@@ -42,9 +42,8 @@ public class ConferenceManagerTestSuite {
 		try {
 			System.out.println("Leyendo configuracion");
 			ConfigurationParser.parse("config/config.xml");
-			if (!ConfigurationParser.debug) {
-				System.exit(1);
-			}
+			ConfigurationParser.marginMasterGateway = 10;
+			ConfigurationParser.marginConferenceSession = 10;
 		} catch (Exception e) {
 		}
 		
@@ -61,6 +60,9 @@ public class ConferenceManagerTestSuite {
         //suite.addTestSuite(IsabelMachinesTest.class);
         //suite.addTestSuite(IsabelSchedulerTest.class);
         suite.addTestSuite(ConferencesTest.class);
+        suite.addTestSuite(RecordingsTest.class);
+        
+        TestConfigurator.initializeAll();
 
         return suite;
     }

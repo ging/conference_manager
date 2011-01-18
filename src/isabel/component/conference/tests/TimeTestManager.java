@@ -5,6 +5,7 @@ import java.util.Date;
 public class TimeTestManager {
 	
 	public static Date now;
+	public static int GAP = 5*60*1000;
 	
 	public static void init() {
 		long time = (new Date()).getTime();
@@ -14,6 +15,6 @@ public class TimeTestManager {
 	}
 	
 	public static Date getTime(int index) {
-		return new Date(now.getTime() + index * 5*60*1000); 
+		return new Date(now.getTime() + index * GAP); 
 	}
 }
