@@ -5,7 +5,6 @@ import isabel.component.conference.util.ConfigurationParser;
 
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
-import java.util.Date;
 import java.util.Enumeration;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
@@ -54,11 +53,9 @@ public class ConferenceManagerTestSuite {
 		System.out.println("Arrancado todo");
 
         TestSuite suite = new TestSuite();
-        long time = (new Date()).getTime();
-    	time = time-time%1000;
     	
-        //suite.addTestSuite(IsabelMachinesTest.class);
-        //suite.addTestSuite(IsabelSchedulerTest.class);
+        suite.addTestSuite(IsabelMachinesTest.class);
+        suite.addTestSuite(IsabelSchedulerTest.class);
         suite.addTestSuite(ConferencesTest.class);
         suite.addTestSuite(RecordingsTest.class);
         
