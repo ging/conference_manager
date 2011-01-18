@@ -38,8 +38,8 @@ public enum StateType {
     PLAY("play"),
     @XmlEnumValue("stop")
     STOP("stop"),
-    @XmlEnumValue("publish")
-    PUBLISH("publish");
+    @XmlEnumValue("published")
+    PUBLISH("published");
     private final String value;
 
     StateType(String v) {
