@@ -8,11 +8,19 @@ import isabel.component.conference.scheduler.jobs.SessionJob;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import junit.framework.TestCase;
 
 import com.jayway.awaitility.Awaitility;
 
 public class RecordingsTest extends TestCase {
+	
+	/**
+	 * Logs
+	 */
+	protected static Logger log = LoggerFactory.getLogger(RecordingsTest.class);
 	
 	/** Received data */
 	private boolean received;
@@ -49,6 +57,7 @@ public class RecordingsTest extends TestCase {
 			@Override
 			public boolean startRecording(String streamURL, String streamName,
 					String conference, String session) {
+				log.info("Start recording");
 				received = true;
 				return true;
 			}
@@ -74,6 +83,7 @@ public class RecordingsTest extends TestCase {
 			@Override
 			public boolean stopRecording(String streamURL, String streamName,
 					String conference, String session) {
+				log.info("Stop recording");
 				received = true;
 				return true;
 			}
@@ -99,6 +109,7 @@ public class RecordingsTest extends TestCase {
 			@Override
 			public boolean publishRecording(String streamURL,
 					String streamName, String conference, String session) {
+				log.info("Start recording");
 				received = true;
 				return false;
 			}
