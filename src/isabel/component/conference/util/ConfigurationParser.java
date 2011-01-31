@@ -105,6 +105,8 @@ public class ConfigurationParser {
 	public static String igwURL = "http://hostname/live";
 	public static String igwOutputDir = "/var/www/live";
 	
+	public static String videoPath = "/var/www/videos/";
+	
 	public static boolean debug = false;
 	
 	/**

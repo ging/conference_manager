@@ -4,10 +4,10 @@ import isabel.component.conference.ConferenceRegistry;
 import isabel.component.conference.data.Conference;
 import isabel.component.conference.data.Conferences;
 import isabel.component.conference.data.ConflictEntity;
-import isabel.component.conference.data.ForbiddenEntity;
 import isabel.component.conference.data.InternalErrorEntity;
 import isabel.component.conference.data.UnprocessableEntity;
 import isabel.component.conference.scheduler.IsabelScheduler;
+import isabel.component.conference.scheduler.SchedulerResponse;
 
 import org.restlet.data.Status;
 import org.restlet.resource.Get;
@@ -56,16 +56,9 @@ public class ConferencesResource extends ServerResource {
 			
 				log.info("New Conference received. " + conference.toString());
 				
-				if (!conference.getStartTime().before(conference.getStopTime())) {
-					// La conferencia ha terminado.
-					ForbiddenEntity forbidden = new ForbiddenEntity();
-					forbidden.message = "Start time after stop time";
-					getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN,
-							"Forbidden");
-					return forbidden;
-				}
+				SchedulerResponse response = IsabelScheduler.getInstance().scheduleConference(conference);
 			
-				if (IsabelScheduler.getInstance().scheduleConference(conference)) {
+				if (response.ok) {
 					log.debug("Conference " + conference.getName()
 						+ " created and scheduled");
 	
@@ -73,7 +66,7 @@ public class ConferencesResource extends ServerResource {
 					this.getResponse().setStatus(Status.SUCCESS_OK, "OK");
 					return conference;
 				} else {
-					this.getResponse().setStatus(Status.CLIENT_ERROR_CONFLICT, "Conflict");
+					this.getResponse().setStatus(Status.CLIENT_ERROR_CONFLICT, response.errorMessage);
 					return new ConflictEntity();
 				}
 			}

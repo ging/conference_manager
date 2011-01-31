@@ -7,6 +7,7 @@ import isabel.component.conference.data.IsabelMachine;
 import isabel.component.conference.data.Session;
 import isabel.component.conference.data.IsabelMachine.SubType;
 import isabel.component.conference.scheduler.IsabelScheduler;
+import isabel.component.conference.scheduler.SchedulerResponse;
 
 import java.util.Date;
 import java.util.List;
@@ -43,21 +44,21 @@ public class IsabelSchedulerTest extends TestCase {
     
     public void testAddConference() {
     	Conference conference = createConference("uno", "meeting", true, true, false, false, TimeTestManager.getTime(1), TimeTestManager.getTime(2));
-    	boolean result = scheduler.scheduleConference(conference);
-    	assertTrue("No se pueden crear conferencias", result);
+    	SchedulerResponse result = scheduler.scheduleConference(conference);
+    	assertTrue("No se pueden crear conferencias", result.ok);
     	Conference confResult = ConferenceRegistry.get(conference.getId());
     	assertTrue("No se ha guardado en la base de datos", confResult != null);
     }
     
     public void testAddSessionToConference() {
     	Conference conference = createConference("uno", "meeting", true, true, false, false, TimeTestManager.getTime(1), TimeTestManager.getTime(4));
-    	boolean result = scheduler.scheduleConference(conference);
-    	assertTrue("No se pueden crear conferencias", result);
+    	SchedulerResponse result = scheduler.scheduleConference(conference);
+    	assertTrue("No se pueden crear conferencias", result.ok);
     	Conference confResult = ConferenceRegistry.get(conference.getId());
     	assertTrue("No se ha guardado en la base de datos", confResult != null);
     	
     	Session session = createSession("sesUno", true, true, TimeTestManager.getTime(1), TimeTestManager.getTime(2), TimeTestManager.getTime(3));
-    	assertTrue("No se puede crear la sesion", scheduler.scheduleSession(conference, session));
+    	assertTrue("No se puede crear la sesion", scheduler.scheduleSession(conference, session).ok);
     	
     	confResult = ConferenceRegistry.get(conference.getId());
     	List<Session> sessions = confResult.getSession();
@@ -74,42 +75,42 @@ public class IsabelSchedulerTest extends TestCase {
     	
     	Session newSession = createSession("sesUno", true, true, TimeTestManager.getTime(1), TimeTestManager.getTime(2), TimeTestManager.getTime(3));
     	
-    	assertTrue("No se puede crear la sesion", scheduler.scheduleSession(conference, newSession));
+    	assertTrue("No se puede crear la sesion", scheduler.scheduleSession(conference, newSession).ok);
     	Session oldSession = ConferenceRegistry.get(conference.getId()).getSession().get(0);
     	assertTrue("Las fechas de inicio no son las mismas", newSession.getStartDate().equals(oldSession.getStartDate()));
     	assertTrue("Las fechas de fin no son las mismas", newSession.getStopDate().equals(oldSession.getStopDate()));
     	
     	newSession = createSession("sesUno", true, true, TimeTestManager.getTime(1), TimeTestManager.getTime(2), TimeTestManager.getTime(4));
     	newSession.setConference(conference);
-    	assertTrue("No se puede retrasar el final de la sesion", scheduler.rescheduleSession(oldSession, newSession));
+    	assertTrue("No se puede retrasar el final de la sesion", scheduler.rescheduleSession(oldSession, newSession).ok);
     	oldSession = ConferenceRegistry.get(conference.getId()).getSession().get(0);
     	assertTrue("Las fechas de inicio no son las mismas", newSession.getStartDate().equals(oldSession.getStartDate()));
     	assertTrue("Las fechas de fin no son las mismas", newSession.getStopDate().equals(oldSession.getStopDate()));
     	
     	newSession = createSession("sesUno", true, true, TimeTestManager.getTime(1), TimeTestManager.getTime(3), TimeTestManager.getTime(4));
     	newSession.setConference(conference);
-    	assertTrue("No se puede retrasar el inicio de la sesion", scheduler.rescheduleSession(oldSession, newSession));
+    	assertTrue("No se puede retrasar el inicio de la sesion", scheduler.rescheduleSession(oldSession, newSession).ok);
     	oldSession = ConferenceRegistry.get(conference.getId()).getSession().get(0);
     	assertTrue("Las fechas de inicio no son las mismas", newSession.getStartDate().equals(oldSession.getStartDate()));
     	assertTrue("Las fechas de fin no son las mismas", newSession.getStopDate().equals(oldSession.getStopDate()));
     	
     	newSession = createSession("sesUno", true, true, TimeTestManager.getTime(1), TimeTestManager.getTime(2), TimeTestManager.getTime(4));
     	newSession.setConference(conference);
-    	assertTrue("No se puede adelantar el inicio de la sesion", scheduler.rescheduleSession(oldSession, newSession));
+    	assertTrue("No se puede adelantar el inicio de la sesion", scheduler.rescheduleSession(oldSession, newSession).ok);
     	oldSession = ConferenceRegistry.get(conference.getId()).getSession().get(0);
     	assertTrue("Las fechas de inicio no son las mismas", newSession.getStartDate().equals(oldSession.getStartDate()));
     	assertTrue("Las fechas de fin no son las mismas", newSession.getStopDate().equals(oldSession.getStopDate()));
     	
     	newSession = createSession("sesUno", true, true, TimeTestManager.getTime(1), TimeTestManager.getTime(2), TimeTestManager.getTime(3));
     	newSession.setConference(conference);
-    	assertTrue("No se puede adelantar el final de la sesion", scheduler.rescheduleSession(oldSession, newSession));
+    	assertTrue("No se puede adelantar el final de la sesion", scheduler.rescheduleSession(oldSession, newSession).ok);
     	oldSession = ConferenceRegistry.get(conference.getId()).getSession().get(0);
     	assertTrue("Las fechas de inicio no son las mismas", newSession.getStartDate().equals(oldSession.getStartDate()));
     	assertTrue("Las fechas de fin no son las mismas", newSession.getStopDate().equals(oldSession.getStopDate()));
     	
     	newSession = createSession("sesUno", true, true, TimeTestManager.getTime(1), TimeTestManager.getTime(3), TimeTestManager.getTime(4));
     	newSession.setConference(conference);
-    	assertTrue("No se puede retrasar toda la sesion", scheduler.rescheduleSession(oldSession, newSession));
+    	assertTrue("No se puede retrasar toda la sesion", scheduler.rescheduleSession(oldSession, newSession).ok);
     	oldSession = ConferenceRegistry.get(conference.getId()).getSession().get(0);
     	assertTrue("Las fechas de inicio no son las mismas", newSession.getStartDate().equals(oldSession.getStartDate()));
     	assertTrue("Las fechas de fin no son las mismas", newSession.getStopDate().equals(oldSession.getStopDate()));
@@ -118,46 +119,46 @@ public class IsabelSchedulerTest extends TestCase {
     
     public void testChangeVoidConference() {
     	Conference conference = createConference("uno", "meeting", true, true, false, false, TimeTestManager.getTime(1), TimeTestManager.getTime(2));
-    	assertTrue("No se puede crear la segunda conferencia", scheduler.scheduleConference(conference));
+    	assertTrue("No se puede crear la segunda conferencia", scheduler.scheduleConference(conference).ok);
     	Conference oldConference = ConferenceRegistry.get(conference.getId());
     	
     	Conference newConference = createConference("uno", "meeting", true, true, false, false, TimeTestManager.getTime(1), TimeTestManager.getTime(3));
-    	assertTrue("No se ha podido retrasar el final", scheduler.rescheduleConference(newConference, oldConference));
+    	assertTrue("No se ha podido retrasar el final", scheduler.rescheduleConference(newConference, oldConference).ok);
 
     	oldConference = ConferenceRegistry.get(conference.getId());
     	assertTrue("Las fechas de inicio no son las mismas", newConference.getResourcesStartTime().equals(oldConference.getResourcesStartTime()));
     	assertTrue("Las fechas de fin no son las mismas", newConference.getResourcesStopTime().equals(oldConference.getResourcesStopTime()));
     	
     	newConference = createConference("uno", "meeting", true, true, false, false, TimeTestManager.getTime(2), TimeTestManager.getTime(3));
-    	assertTrue("No se ha podido retrasar el principio", scheduler.rescheduleConference(newConference, oldConference));
+    	assertTrue("No se ha podido retrasar el principio", scheduler.rescheduleConference(newConference, oldConference).ok);
     	
     	oldConference = ConferenceRegistry.get(conference.getId());
     	assertTrue("Las fechas de inicio no son las mismas", newConference.getResourcesStartTime().equals(oldConference.getResourcesStartTime()));
     	assertTrue("Las fechas de fin no son las mismas", newConference.getResourcesStopTime().equals(oldConference.getResourcesStopTime()));
     	
     	newConference = createConference("uno", "meeting", true, true, false, false, TimeTestManager.getTime(1), TimeTestManager.getTime(3));
-    	assertTrue("No se ha podido adelantar el principio", scheduler.rescheduleConference(newConference, oldConference));
+    	assertTrue("No se ha podido adelantar el principio", scheduler.rescheduleConference(newConference, oldConference).ok);
     	
     	oldConference = ConferenceRegistry.get(conference.getId());
     	assertTrue("Las fechas de inicio no son las mismas", newConference.getResourcesStartTime().equals(oldConference.getResourcesStartTime()));
     	assertTrue("Las fechas de fin no son las mismas", newConference.getResourcesStopTime().equals(oldConference.getResourcesStopTime()));
     	
     	newConference = createConference("uno", "meeting", true, true, false, false, TimeTestManager.getTime(1), TimeTestManager.getTime(2));
-    	assertTrue("No se ha podido adelantar el final", scheduler.rescheduleConference(newConference, oldConference));
+    	assertTrue("No se ha podido adelantar el final", scheduler.rescheduleConference(newConference, oldConference).ok);
     	
     	oldConference = ConferenceRegistry.get(conference.getId());
     	assertTrue("Las fechas de inicio no son las mismas", newConference.getResourcesStartTime().equals(oldConference.getResourcesStartTime()));
     	assertTrue("Las fechas de fin no son las mismas", newConference.getResourcesStopTime().equals(oldConference.getResourcesStopTime()));
     	
     	newConference = createConference("uno", "meeting", true, true, false, false, TimeTestManager.getTime(3), TimeTestManager.getTime(4));
-    	assertTrue("No se ha podido retrasar toda la conferencia", scheduler.rescheduleConference(newConference, oldConference));
+    	assertTrue("No se ha podido retrasar toda la conferencia", scheduler.rescheduleConference(newConference, oldConference).ok);
     	
     	oldConference = ConferenceRegistry.get(conference.getId());
     	assertTrue("Las fechas de inicio no son las mismas", newConference.getResourcesStartTime().equals(oldConference.getResourcesStartTime()));
     	assertTrue("Las fechas de fin no son las mismas", newConference.getResourcesStopTime().equals(oldConference.getResourcesStopTime()));
     	
     	newConference = createConference("uno", "meeting", true, true, false, false, TimeTestManager.getTime(1), TimeTestManager.getTime(2));
-    	assertTrue("No se ha podido adelantar toda la conferencia", scheduler.rescheduleConference(newConference, oldConference));
+    	assertTrue("No se ha podido adelantar toda la conferencia", scheduler.rescheduleConference(newConference, oldConference).ok);
     	
     	oldConference = ConferenceRegistry.get(conference.getId());
     	assertTrue("Las fechas de inicio no son las mismas", newConference.getResourcesStartTime().equals(oldConference.getResourcesStartTime()));
@@ -177,85 +178,85 @@ public class IsabelSchedulerTest extends TestCase {
     
     public void testAddTwoConferences() {
     	Conference conference = createConference("uno", "meeting", true, true, false, false, TimeTestManager.getTime(1), TimeTestManager.getTime(2));
-    	assertTrue("No se puede crear la primera conferencia", scheduler.scheduleConference(conference));
+    	assertTrue("No se puede crear la primera conferencia", scheduler.scheduleConference(conference).ok);
     	conference = createConference("dos", "meeting", true, true, false, false, TimeTestManager.getTime(3), TimeTestManager.getTime(4));
-    	assertTrue("No se puede crear la segunda conferencia", scheduler.scheduleConference(conference));
+    	assertTrue("No se puede crear la segunda conferencia", scheduler.scheduleConference(conference).ok);
     }
     
     public void testCheckCreateOverlapAfter() {
     	Conference conference = createConference("uno", "meeting", true, true, false, false, TimeTestManager.getTime(1), TimeTestManager.getTime(3));
-    	assertTrue("No se puede crear la primera conferencia", scheduler.scheduleConference(conference));
+    	assertTrue("No se puede crear la primera conferencia", scheduler.scheduleConference(conference).ok);
     	conference = createConference("dos", "meeting", true, true, false, false, TimeTestManager.getTime(2), TimeTestManager.getTime(4));
-    	assertFalse("Ha permitido solapar conferencias", scheduler.scheduleConference(conference));
+    	assertFalse("Ha permitido solapar conferencias", scheduler.scheduleConference(conference).ok);
     }
     
     public void testCheckCreateOverlapBefore() {
     	Conference conference = createConference("uno", "meeting", true, true, false, false, TimeTestManager.getTime(2), TimeTestManager.getTime(4));
-    	assertTrue("No se puede crear la primera conferencia", scheduler.scheduleConference(conference));
+    	assertTrue("No se puede crear la primera conferencia", scheduler.scheduleConference(conference).ok);
     	conference = createConference("dos", "meeting", true, true, false, false, TimeTestManager.getTime(1), TimeTestManager.getTime(3));
-    	assertFalse("Ha permitido solapar conferencias", scheduler.scheduleConference(conference));
+    	assertFalse("Ha permitido solapar conferencias", scheduler.scheduleConference(conference).ok);
     }
     
     public void testCheckCreateOverlapIn() {
     	Conference conference = createConference("uno", "meeting", true, true, false, false, TimeTestManager.getTime(1), TimeTestManager.getTime(4));
-    	assertTrue("No se puede crear la primera conferencia", scheduler.scheduleConference(conference));
+    	assertTrue("No se puede crear la primera conferencia", scheduler.scheduleConference(conference).ok);
     	conference = createConference("dos", "meeting", true, true, false, false, TimeTestManager.getTime(2), TimeTestManager.getTime(3));
-    	assertFalse("Ha permitido solapar conferencias", scheduler.scheduleConference(conference));
+    	assertFalse("Ha permitido solapar conferencias", scheduler.scheduleConference(conference).ok);
     }
     
     public void testCheckCreateOverlapOut() {
     	Conference conference = createConference("uno", "meeting", true, true, false, false, TimeTestManager.getTime(2), TimeTestManager.getTime(3));
-    	assertTrue("No se puede crear la primera conferencia", scheduler.scheduleConference(conference));
+    	assertTrue("No se puede crear la primera conferencia", scheduler.scheduleConference(conference).ok);
     	conference = createConference("dos", "meeting", true, true, false, false, TimeTestManager.getTime(1), TimeTestManager.getTime(4));
-    	assertFalse("Ha permitido solapar conferencias", scheduler.scheduleConference(conference));
+    	assertFalse("Ha permitido solapar conferencias", scheduler.scheduleConference(conference).ok);
     }
     
     public void testCheckExtendOverlapAfter() {
     	Conference conference = createConference("uno", "meeting", true, true, false, false, TimeTestManager.getTime(1), TimeTestManager.getTime(3));
-    	assertTrue("No se puede crear la primera conferencia", scheduler.scheduleConference(conference));
+    	assertTrue("No se puede crear la primera conferencia", scheduler.scheduleConference(conference).ok);
     	
     	conference = createConference("dos", "meeting", true, true, false, false, TimeTestManager.getTime(4), TimeTestManager.getTime(6));
-    	assertTrue("No se puede crear la segunda conferencia", scheduler.scheduleConference(conference));
+    	assertTrue("No se puede crear la segunda conferencia", scheduler.scheduleConference(conference).ok);
     	Conference oldConference = ConferenceRegistry.get(conference.getId());
     	
     	Conference newConference = createConference("uno", "meeting", true, true, false, false, TimeTestManager.getTime(2), TimeTestManager.getTime(6));
-    	assertFalse("Ha permitido solapar conferencias al extender", scheduler.rescheduleConference(newConference, oldConference));
+    	assertFalse("Ha permitido solapar conferencias al extender", scheduler.rescheduleConference(newConference, oldConference).ok);
     }
     
     public void testCheckExtendOverlapBefore() {
     	Conference conference = createConference("uno", "meeting", true, true, false, false, TimeTestManager.getTime(4), TimeTestManager.getTime(6));
-    	assertTrue("No se puede crear la primera conferencia", scheduler.scheduleConference(conference));
+    	assertTrue("No se puede crear la primera conferencia", scheduler.scheduleConference(conference).ok);
     	
     	conference = createConference("dos", "meeting", true, true, false, false, TimeTestManager.getTime(1), TimeTestManager.getTime(3));
-    	assertTrue("No se puede crear la segunda conferencia", scheduler.scheduleConference(conference));
+    	assertTrue("No se puede crear la segunda conferencia", scheduler.scheduleConference(conference).ok);
     	Conference oldConference = ConferenceRegistry.get(conference.getId());
     	
     	Conference newConference = createConference("uno", "meeting", true, true, false, false, TimeTestManager.getTime(1), TimeTestManager.getTime(5));
-    	assertFalse("Ha permitido solapar conferencias al extender", scheduler.rescheduleConference(newConference, oldConference));
+    	assertFalse("Ha permitido solapar conferencias al extender", scheduler.rescheduleConference(newConference, oldConference).ok);
     }
     
     public void testCheckChangeOverlapIn() {
     	Conference conference = createConference("uno", "meeting", true, true, false, false, TimeTestManager.getTime(3), TimeTestManager.getTime(6));
-    	assertTrue("No se puede crear la primera conferencia", scheduler.scheduleConference(conference));
+    	assertTrue("No se puede crear la primera conferencia", scheduler.scheduleConference(conference).ok);
     	
     	conference = createConference("dos", "meeting", true, true, false, false, TimeTestManager.getTime(1), TimeTestManager.getTime(2));
-    	assertTrue("No se puede crear la segunda conferencia", scheduler.scheduleConference(conference));
+    	assertTrue("No se puede crear la segunda conferencia", scheduler.scheduleConference(conference).ok);
     	Conference oldConference = ConferenceRegistry.get(conference.getId());
     	
     	Conference newConference = createConference("uno", "meeting", true, true, false, false, TimeTestManager.getTime(4), TimeTestManager.getTime(5));
-    	assertFalse("Ha permitido solapar conferencias al extender", scheduler.rescheduleConference(newConference, oldConference));
+    	assertFalse("Ha permitido solapar conferencias al extender", scheduler.rescheduleConference(newConference, oldConference).ok);
     }
     
     public void testCheckChangeOverlapOut() {
     	Conference conference = createConference("uno", "meeting", true, true, false, false, TimeTestManager.getTime(3), TimeTestManager.getTime(5));
-    	assertTrue("No se puede crear la primera conferencia", scheduler.scheduleConference(conference));
+    	assertTrue("No se puede crear la primera conferencia", scheduler.scheduleConference(conference).ok);
     	
     	conference = createConference("dos", "meeting", true, true, false, false, TimeTestManager.getTime(1), TimeTestManager.getTime(2));
-    	assertTrue("No se puede crear la segunda conferencia", scheduler.scheduleConference(conference));
+    	assertTrue("No se puede crear la segunda conferencia", scheduler.scheduleConference(conference).ok);
     	Conference oldConference = ConferenceRegistry.get(conference.getId());
     	
     	Conference newConference = createConference("uno", "meeting", true, true, false, false, TimeTestManager.getTime(2), TimeTestManager.getTime(6));
-    	assertFalse("Ha permitido solapar conferencias al extender", scheduler.rescheduleConference(newConference, oldConference));
+    	assertFalse("Ha permitido solapar conferencias al extender", scheduler.rescheduleConference(newConference, oldConference).ok);
     }
     
     private Session createSession(String name, boolean enableStreaming, boolean automaticRecording, 
