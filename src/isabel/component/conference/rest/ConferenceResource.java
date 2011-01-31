@@ -8,6 +8,7 @@ import isabel.component.conference.data.InternalErrorEntity;
 import isabel.component.conference.data.NotFoundEntity;
 import isabel.component.conference.data.UnprocessableEntity;
 import isabel.component.conference.scheduler.IsabelScheduler;
+import isabel.component.conference.scheduler.SchedulerResponse;
 
 import java.util.Date;
 
@@ -25,17 +26,13 @@ import org.slf4j.LoggerFactory;
  * @author jcervino@dit.upm.es
  * 
  */
-/**
- * @author javi
- * 
- */
 public class ConferenceResource extends ServerResource {
 	
 	protected static Logger log = LoggerFactory
 	.getLogger(ConferenceResource.class);
 	
 	/**
-	 * Conferencia sobre la que llega una nueva peticion REST
+	 * Conference that will be managed.
 	 */
 	private Conference conference;
 	
@@ -74,7 +71,7 @@ public class ConferenceResource extends ServerResource {
 	}
 
 	/**
-	 * Devuelve a un GET la representaci�n XML de una conferencia.
+	 * Returns the representation of a conference.
 	 * 
 	 * @return
 	 */
@@ -85,7 +82,7 @@ public class ConferenceResource extends ServerResource {
 	}
 
 	/**
-	 * Elimina la conferencia ante un DELETE
+	 * Removes a conference.
 	 */
 	@Delete
 	public Object remove() {
@@ -119,12 +116,12 @@ public class ConferenceResource extends ServerResource {
 	}
 
 	/**
-	 * Modifica una conferencia creada anteriormente.
+	 * Changes a conference that is on the database.
 	 * 
 	 * @param newConference
-	 *            Nueva representacion de la conferencia.
+	 *      New representation of the conference.
 	 * 
-	 * @return Devuelve la conferencia o un error.
+	 * @return Return the conference or an error message.
 	 */
 	@Put
 	public Object changeConference(Conference newConference) {
@@ -139,31 +136,11 @@ public class ConferenceResource extends ServerResource {
 							Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY,
 							"Unprocessable Entity");
 				}
-				
-				if (!newConference.getStartTime().before(newConference.getStopTime())) {
-					return createForbidden("Start time after stop time");
-				}
-	
-				if (conference.getResourcesStopTime().before(new Date())) {
-					return createForbidden("Old conference");
-				} else if (conference.getResourcesStartTime().before(new Date()) &&
-						(!newConference.getResourcesStartTime().equals(conference.getResourcesStartTime()))	
-					) {
-					return createForbidden("Cannot change start date from a conference that is running");
-				} else if (conference.getResourcesStartTime().after(new Date()) &&
-						newConference.getResourcesStartTime().before(new Date())) {
-					return createForbidden("Start date is before now");
-				} else if (conference.getResourcesStopTime().after(new Date()) &&
-						newConference.getResourcesStopTime().before(new Date())) {
-					return createForbidden("Stop date is before now.");
-				} else {
-					if (!IsabelScheduler.getInstance().rescheduleConference(newConference, conference)) {
-						log.error("There was a conflict");
-						ConflictEntity conflict = new ConflictEntity();
-						getResponse().setStatus(Status.CLIENT_ERROR_CONFLICT,
-						"Conflict");
-						return conflict;
-					}
+				SchedulerResponse response = IsabelScheduler.getInstance().rescheduleConference(newConference, conference);
+				if (!response.ok) {
+					ConflictEntity conflict = new ConflictEntity();
+					getResponse().setStatus(Status.CLIENT_ERROR_CONFLICT,response.errorMessage);
+					return conflict;
 				}
 				
 				
@@ -182,11 +159,11 @@ public class ConferenceResource extends ServerResource {
 	
 	
 	/**
-	 * Metodo que crea un mensaje de prohibicion.
+	 * It creates a Forbidden message.
 	 * @param message
-	 * Mensaje que incluir a la prohibicion.
+	 * Message to be included in the entity.
 	 * @return
-	 * La prohibicion que se ha creado.
+	 * Thge forbidden message entity.
 	 */
 	private ForbiddenEntity createForbidden(String message) {
 		log.error("Forbidden: " + message);

@@ -7,6 +7,7 @@ import isabel.component.conference.data.NotFoundEntity;
 import isabel.component.conference.data.Session;
 import isabel.component.conference.data.UnprocessableEntity;
 import isabel.component.conference.scheduler.IsabelScheduler;
+import isabel.component.conference.scheduler.SchedulerResponse;
 
 import org.restlet.data.Status;
 import org.restlet.ext.jaxb.JaxbRepresentation;
@@ -46,15 +47,16 @@ public class SessionsResource extends ServerResource {
 	}
 	
 	/**
-	 * Crea una nueva sesion.
+	 * Creates a new session in a conference with the given parameters 
 	 * 
 	 * @param session
-	 *            Sesion nueva creada en la conferencia.
+	 *            Info for the session to be created.
 	 * @return
+	 * 			The session created with more information about the conference.
 	 */
 	@Post
 	public Object createSession(Session session) {
-		log.debug("Creamos la nueva sesion");
+		log.debug("Creating new session.");
 		try {
 			UnprocessableEntity error = ConferenceRegistry.check(session);
 			if (error != null) {
@@ -63,18 +65,18 @@ public class SessionsResource extends ServerResource {
 						"Unprocessable Entity");
 			}
 
-			log.debug("Nueva sesion " + session.getName() + " en la conferencia " + conference.getId());
-
-			// Ya sabemos a que conferencia pertenece. Intentamos programarlo.
-			if (IsabelScheduler.getInstance().scheduleSession(conference, session)) {
+			log.debug("New session request with name " + session.getName() + "; in conference " + conference.getId());
 			
-				//ConferenceRegistry.addSessionToConference(conference, session);
+			// We already know the conference that owns it. Try scheduling.
+			SchedulerResponse response = IsabelScheduler.getInstance().scheduleSession(conference, session);
 
+			if (response.ok) {
+			
 				getResponse().setLocationRef("sessions/" + session.getId());
 				this.getResponse().setStatus(Status.SUCCESS_OK, "OK");
 				return session;
 			} else {
-				this.getResponse().setStatus(Status.CLIENT_ERROR_CONFLICT, "Conflict");
+				this.getResponse().setStatus(Status.CLIENT_ERROR_CONFLICT, response.errorMessage);
 				ConflictEntity ent = new ConflictEntity();
 				return ent;
 			}

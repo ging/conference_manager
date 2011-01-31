@@ -86,22 +86,30 @@ public class IsabelScheduler {
 	 * @return
 	 * Un flag indicando si se ha podido programar la conferencia.
 	 */
-	public synchronized boolean scheduleConference(Conference conference) {
+	public synchronized SchedulerResponse scheduleConference(Conference conference) {
 		
 		log.debug("Scheduling conference " + conference.getName());
 		
 		Date startDateTime = conference.getResourcesStartTime();
 		Date stopDateTime = conference.getResourcesStopTime();
 		
-		if (!startDateTime.after(new Date()))
-			return false;
+		if (!startDateTime.after(new Date())) {
+			return SchedulerResponse.error("Conference request has and old start date");
+		} else if (!conference.getStartTime().before(conference.getStopTime())) {
+			// La conferencia ha terminado.
+			String errorMessage = "Start time after stop time";
+			log.error(errorMessage);
+			
+			return SchedulerResponse.error(errorMessage);
+		}
+		
 		
 		if (IsabelMachineRegistry.checkAvailability(startDateTime, stopDateTime, conference)) {
 			ConferenceRegistry.add(conference);
 			jobScheduler.scheduleConferenceJobs(conference);
-			return true;	
+			return SchedulerResponse.ok();	
 		} else {
-			return false;
+			return SchedulerResponse.error("There are not available resources for this conference");
 		}
 		
 	}
@@ -118,22 +126,43 @@ public class IsabelScheduler {
 	 * @return
 	 * Un flag indicando si se ha podido programar o no.
 	 */
-	public synchronized boolean rescheduleConference(Conference newConference, Conference conference) {
+	public synchronized SchedulerResponse rescheduleConference(Conference newConference, Conference conference) {
 		
 		log.debug("Rescheduling conference " + newConference.getName());
 		
 		Date startDateTime = conference.getResourcesStartTime();
 		Date stopDateTime = conference.getResourcesStopTime();
 		
-		// Comprobamos si las sesiones terminarian mas tarde que al conferencia.
-		if (Math.abs(startDateTime.compareTo(newConference.getResourcesStartTime())) > 0 || 
+		String errorMessage = "";
+		
+		if (!newConference.getStartTime().before(newConference.getStopTime())) {
+			errorMessage = "Start time after stop time";
+			return SchedulerResponse.error(errorMessage);
+		} else if (conference.getResourcesStopTime().before(new Date())) {
+			errorMessage = "Old conference";
+			return SchedulerResponse.error(errorMessage);
+		} else if (conference.getResourcesStartTime().before(new Date()) &&
+				(!newConference.getResourcesStartTime().equals(conference.getResourcesStartTime()))	
+			) {
+			errorMessage = "Cannot change start date from a conference that is running";
+			return SchedulerResponse.error(errorMessage);
+		} else if (conference.getResourcesStartTime().after(new Date()) &&
+				newConference.getResourcesStartTime().before(new Date())) {
+			errorMessage = "Start date is before now";
+			return SchedulerResponse.error(errorMessage);
+		} else if (conference.getResourcesStopTime().after(new Date()) &&
+				newConference.getResourcesStopTime().before(new Date())) {
+			errorMessage = "Stop date is before now.";
+			return SchedulerResponse.error(errorMessage);
+		} else if (Math.abs(startDateTime.compareTo(newConference.getResourcesStartTime())) > 0 || 
 				Math.abs(stopDateTime.compareTo(newConference.getResourcesStopTime())) > 0) {
+			// Comprobamos si las sesiones terminarian mas tarde que al conferencia.
 			List<Session> sessions = conference.getSession();
 			for (Session session:sessions) {
 				Date stopDate = new Date(newConference.getStartTime().getTime() + session.getStopTime());
 				if (stopDate.after(newConference.getStopTime())) {
-					log.error("Error rescheduling conference " + conference.getId() + ": the conference ends before the last session");
-					return false;
+					errorMessage = "Error rescheduling conference " + conference.getId() + ": the conference ends before the last session";
+					return SchedulerResponse.error(errorMessage);
 				}
 			}
 		}
@@ -155,9 +184,9 @@ public class IsabelScheduler {
 			}
 
 			jobScheduler.rescheduleConferenceJobs(result);
-			return true;
+			return SchedulerResponse.ok();
 		} else {
-			return false;
+			return SchedulerResponse.error("There are not available resources for these dates.");
 		}
 	}
 
@@ -188,7 +217,7 @@ public class IsabelScheduler {
 	 * @return
 	 * Un flag indicando si se ha podido programar la sesion dentro de la conferencia.
 	 */
-	public synchronized boolean scheduleSession(Conference conference, Session session) {
+	public synchronized SchedulerResponse scheduleSession(Conference conference, Session session) {
 		
 		log.debug("Programando la sesion " + session.getName() + " de la conferencia " + conference.getName());
 		
@@ -197,17 +226,19 @@ public class IsabelScheduler {
 		Date nowWithMargin = new Date();
 		
 		session.setConference(conference);
-
+		String errorMessage = "";
 		if (session.getStartDate().before(nowWithMargin)
 				|| session.getStopDate().before(nowWithMargin)
 				|| !session.getStartDate().before(session.getStopDate())) {
-			log.debug("Sesion ya iniciada: " + session.getStartDate() + " - " + session.getStopDate() + " - " + nowWithMargin);
-			return false;
+			errorMessage = "Session is already initialized: " + session.getStartDate() + " - " + session.getStopDate() + " - " + nowWithMargin;
+			log.debug(errorMessage);
+			return SchedulerResponse.error(errorMessage);
 		}
 		
 		if (conference.getSession().size() > 0 && conference.getResourcesStopTime().before(new Date())) {
-			log.debug("Conferencia terminada. No se puede a�adir la nueva sesi�n");
-			return false;
+			errorMessage = "Conference is ended. Impossible to add new session.";
+			log.debug(errorMessage);
+			return SchedulerResponse.error(errorMessage);
 		}
 		
 		Date startDate = session.getStartDate();
@@ -215,8 +246,9 @@ public class IsabelScheduler {
 		
 		if (startDate.before(conference.getStartTime()) ||
 				stopDate.after(conference.getStopTime())) {
-			log.debug("La sesion se sale de los margenes de la conferencia");
-			return false;
+			errorMessage = "Session is out of the conference margins";
+			log.debug(errorMessage);
+			return SchedulerResponse.error(errorMessage);
 		}
 		
 		// Hay que guardarla en la base de datos.
@@ -225,7 +257,7 @@ public class IsabelScheduler {
 		// Programamos las tareas.
 		jobScheduler.scheduleSessionJobs(session);
 				
-		return true;
+		return SchedulerResponse.ok();
 	}
 
 	/**
@@ -240,7 +272,7 @@ public class IsabelScheduler {
 	 * @return
 	 * Un flag indicando si se ha podido reprogramar la sesion o no.
 	 */
-	public synchronized boolean rescheduleSession(Session oldSession, Session newSession) {
+	public synchronized SchedulerResponse rescheduleSession(Session oldSession, Session newSession) {
 
 		Conference conference = oldSession.getConference();
 		conference = ConferenceRegistry.get(conference.getId());
@@ -249,24 +281,46 @@ public class IsabelScheduler {
 		
 		Date nowWithMargin = new Date();
 		
-		if (oldSession.getStartDate().before(nowWithMargin) && newSession.getStartDate().after(nowWithMargin)) {
-			log.debug("Sesion previamente iniciada: " + oldSession.getStartDate() + " - " + newSession.getStartDate());
-			return false;
-		}
+		String errorMessage = "";
 		
-		if (oldSession.getStartDate().after(nowWithMargin) && newSession.getStartDate().before(nowWithMargin)) {
-			log.debug("Sesion no iniciada: " + oldSession.getStartDate() + " - " + newSession.getStartDate());
-			return false;
-		}
-		
-		if (oldSession.getStopDate().before(nowWithMargin) && newSession.getStopDate().after(nowWithMargin)) {
-			log.debug("Sesion previamente finalizada: " + oldSession.getStopDate() + " - " + newSession.getStopDate());
-			return false;
-		}
-		
-		if (oldSession.getStopDate().after(nowWithMargin) && newSession.getStopDate().before(nowWithMargin)) {
-			log.debug("Sesion no finalizada: " + oldSession.getStopDate() + " - " + newSession.getStopDate());
-			return false;
+		if (newSession.getStartDate().after(newSession.getStopDate())) {
+			errorMessage = "Wrong dates"; 
+			log.debug(errorMessage);
+			return SchedulerResponse.error(errorMessage);
+		} else if (oldSession.getStopDate().before(new Date())) {
+			errorMessage = "Old session"; 
+			log.debug(errorMessage);
+			return SchedulerResponse.error(errorMessage);
+		} else if (newSession.getStopDate().before(new Date())) {
+			errorMessage = "New stop date is before now"; 
+			log.debug(errorMessage);
+			return SchedulerResponse.error(errorMessage);
+		} else if (oldSession.getStartDate().before(new Date()) && 
+					!oldSession.getStartDate().equals(newSession.getStartDate())) {
+			errorMessage = "Cannot change start date from a running session"; 
+			log.debug(errorMessage);
+			return SchedulerResponse.error(errorMessage);
+		} else if (oldSession.getStartDate().after(new Date()) &&
+				newSession.getStartDate().before(new Date())) {
+			errorMessage = "New start date is before now"; 
+			log.debug(errorMessage);
+			return SchedulerResponse.error(errorMessage);
+		} else if (oldSession.getStartDate().before(nowWithMargin) && newSession.getStartDate().after(nowWithMargin)) {
+			errorMessage = "Session previously started: " + oldSession.getStartDate() + " - " + newSession.getStartDate(); 
+			log.debug(errorMessage);
+			return SchedulerResponse.error(errorMessage);
+		} else if (oldSession.getStartDate().after(nowWithMargin) && newSession.getStartDate().before(nowWithMargin)) {
+			errorMessage = "Sesion not initialized: " + oldSession.getStartDate() + " - " + newSession.getStartDate(); 
+			log.debug(errorMessage);
+			return SchedulerResponse.error(errorMessage);
+		} else if (oldSession.getStopDate().before(nowWithMargin) && newSession.getStopDate().after(nowWithMargin)) {
+			errorMessage = "Sesion is previously finalized: " + oldSession.getStopDate() + " - " + newSession.getStopDate();
+			log.debug(errorMessage);
+			return SchedulerResponse.error(errorMessage);
+		} else if (oldSession.getStopDate().after(nowWithMargin) && newSession.getStopDate().before(nowWithMargin)) {
+			errorMessage = "Sesion not finalized: " + oldSession.getStopDate() + " - " + newSession.getStopDate();
+			log.debug(errorMessage);
+			return SchedulerResponse.error(errorMessage);
 		}
 		
 		Date startDate = newSession.getStartDate();
@@ -274,8 +328,9 @@ public class IsabelScheduler {
 		
 		if (startDate.before(conference.getStartTime()) ||
 				stopDate.after(conference.getStopTime())) {
-			log.debug("La sesion se sale de los margenes de la conferencia");
-			return false;
+			errorMessage = "Session is out of the conference margins";
+			log.debug(errorMessage);
+			return SchedulerResponse.error(errorMessage);
 		}
 		
 		log.debug("Old dates: " + oldSession.getStartDate() + " - " + oldSession.getStopDate());
@@ -299,9 +354,9 @@ public class IsabelScheduler {
 			jobScheduler.scheduleStopSessionJob(newSession);
 		}
 		
-		log.debug("Sesion " + newSession.getName() + " reprogramada correctamente");
+		log.debug("Session " + newSession.getName() + " correctly rescheduled");
 		
-		return true;
+		return SchedulerResponse.ok();
 	}
 	
 	/**

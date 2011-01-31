@@ -9,6 +9,7 @@ import isabel.component.conference.data.NotFoundEntity;
 import isabel.component.conference.data.Session;
 import isabel.component.conference.data.UnprocessableEntity;
 import isabel.component.conference.scheduler.IsabelScheduler;
+import isabel.component.conference.scheduler.SchedulerResponse;
 
 import java.util.Date;
 import java.util.List;
@@ -26,7 +27,7 @@ import org.slf4j.LoggerFactory;
 public class SessionResource extends ServerResource {
 
 	/**
-	 * Logs de la aplicacion
+	 * SessionResource logs.
 	 */
 	protected static Logger log = LoggerFactory
 			.getLogger(SessionResource.class);
@@ -87,12 +88,12 @@ public class SessionResource extends ServerResource {
 	}
 	
 	/**
-	 * Modifica una sesion creada anteriormente.
+	 * It changes the parameters of the session. Even it can reschedule with new times.
 	 * 
 	 * @param newSession
-	 *            Nueva representaci�n de la sesion.
+	 *           New session representation.
 	 * 
-	 * @return Devuelve la sesion o un error.
+	 * @return The session or an error.
 	 */
 	@Put
 	public Object changeSession(Session newSession) {
@@ -105,8 +106,9 @@ public class SessionResource extends ServerResource {
 						"Unprocessable Entity");
 			}
 			
+			// If the session does not change key parameters we can update it.
 			newSession.setConference(conference);
-			newSession.setStatus(session.getStatus()); // Desde aqui no se puede modificar el estado por defecto.
+			newSession.setStatus(session.getStatus()); // We can not update the state from this interface.
 			if (	session.getStartDate().equals(newSession.getStartDate()) &&
 					session.getStopDate().equals(newSession.getStopDate()) &&
 					session.isAutomaticRecord() == newSession.isAutomaticRecord() &&
@@ -119,41 +121,30 @@ public class SessionResource extends ServerResource {
 				return newSession;
 			}
 			
+			// If the session is running now and we want to change automatic recording we can not update it.
 			if (session.getStartDate().before(new Date()) &&
 					session.getStopDate().after(new Date())) {
-				// La sesion esta corriendo ahora.
+				// Session is running now.
 				if (session.isAutomaticRecord() != newSession.isAutomaticRecord()) {
 					return createForbidden("Cannot change recording configuration in a running session");
 				}
 			}
 			
-			if (newSession.getStartDate().after(newSession.getStopDate())) {
-				return createForbidden("Wrong dates");
-			}else if (session.getStopDate().before(new Date())) {
-				return createForbidden("Old session");
-			} else if (newSession.getStopDate().before(new Date())) {
-				return createForbidden("New stop date is before now");
-			} else if (session.getStartDate().before(new Date()) && 
-						!session.getStartDate().equals(newSession.getStartDate())) {
-				return createForbidden("Cannot change start date from a running session");
-			} else if (session.getStartDate().after(new Date()) &&
-					newSession.getStartDate().before(new Date())) {
-				return createForbidden("New start date is before now");
-			} else if (!IsabelScheduler.getInstance().rescheduleSession(session, newSession)) {
-				log.error("Conflict");
+			SchedulerResponse response = IsabelScheduler.getInstance().rescheduleSession(session, newSession);
+			if (!response.ok) {
 				ConflictEntity conflict = new ConflictEntity();
-				getResponse().setStatus(Status.CLIENT_ERROR_CONFLICT,
-				"Conflict");
+				getResponse().setStatus(Status.CLIENT_ERROR_CONFLICT, response.errorMessage);
 				return conflict;
 			}
 			
-			//ConferenceRegistry.updateSession(session.getId(), newSession);
-			
+			// We could update the session and schedule it.
 			this.getResponse().setStatus(Status.SUCCESS_OK, "OK");
 			this.getResponse().setLocationRef("" + session.getId());
 			
 			return newSession;
 		} catch (Exception e) {
+			
+			// For any exception we show the logs.
 			log.error("Error updating session " + session.getId() + "; message: " + e.getLocalizedMessage());
 			this.getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,
 			"Internal Server Error");
@@ -168,7 +159,7 @@ public class SessionResource extends ServerResource {
 	}
 	
 	/**
-	 * Elimina una sesion.
+	 * Removes an old session.
 	 * 
 	 * @return
 	 */
@@ -196,11 +187,11 @@ public class SessionResource extends ServerResource {
 	}
 	
 	/**
-	 * Metodo que crea un mensaje de prohibicion.
+	 * It creates a Forbidden message.
 	 * @param message
-	 * Mensaje que incluir a la prohibicion.
+	 * Message to be included in the entity.
 	 * @return
-	 * La prohibicion que se ha creado.
+	 * Thge forbidden message entity.
 	 */
 	private ForbiddenEntity createForbidden(String message) {
 		log.error("Forbidden: " + message);

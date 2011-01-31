@@ -235,7 +235,10 @@ public class StartConferenceJob extends ConferenceJob {
 	 * @return
 	 */
 	private boolean allocateConference() {
-		// Suponemos que hay m�quinas disponibles porque se comprob� en su momento. Si no no estar�amos
+		
+		log.debug("Allocating conference " + conference.getId());
+		
+		// Suponemos que hay maquinas disponibles porque se comprobo en su momento. Si no no estariamos
 		// en este punto.
 		Map<Type, Integer> neededMachines = IsabelMachineRegistry.getNeededIsabelMachines(conference);
 		Map<Type, List<IsabelMachine>> machines = IsabelMachineRegistry.getAvailableIsabelMachinesByType();
