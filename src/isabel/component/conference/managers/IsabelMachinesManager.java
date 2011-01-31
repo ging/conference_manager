@@ -1,5 +1,6 @@
 package isabel.component.conference.managers;
 
+import isabel.component.conference.IsabelMachineRegistry;
 import isabel.component.conference.data.Conference;
 import isabel.component.conference.data.IsabelMachine;
 import isabel.component.conference.data.IsabelMachine.IsabelNodeType;
@@ -24,22 +25,17 @@ import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.core.util.StatusPrinter;
 
 /**
- * Gestor de maquinas Isabel que se puede ejecutar por linea de comando
+ * 
+ * Isabel machines manager that can be used by command line.
  * 
  * @author jcervino@dit.upm.es
  *
  */
 public class IsabelMachinesManager {
 
-	/**
-	 * Metodo de arranque del gestor de maquinas Isabel.
-	 * 
-	 * @param args
-	 */
-	@SuppressWarnings("unchecked")
 	public static void main(String[] args) {
 
-		// Borrando Loggers indeseados.
+		// Removing undesired loggers.
 		Enumeration<String> loggers = LogManager.getLogManager().getLoggerNames();
 		while (loggers.hasMoreElements()) {
 			java.util.logging.Logger log = LogManager.getLogManager().getLogger(loggers.nextElement());
@@ -70,124 +66,126 @@ public class IsabelMachinesManager {
 		}
 		String op = args[0];
 		if (op.equalsIgnoreCase("list")) {
-			// Iniciamos la base de datos.
-
-			Session session = HibernateUtil.getSessionFactory()
-					.getCurrentSession();
-
-			session.beginTransaction();
-			List<IsabelMachine> preResult = session.createQuery(
-					"from IsabelMachine").list();
-
-			for (IsabelMachine isabel : preResult) {
-
-				System.out.println("ISABEL MACHINE. Hostname: "
-						+ isabel.getHostname() + "; tipo: "
-						+ getIsabelType(isabel.getSubType()) + "; tipo de nodo: " + getIsabelNodeType(isabel.getIsabelNodeType()) + "; Id: "
-						+ isabel.getId());
-				Conference conference = isabel.getConference();
-				if (conference != null) {
-					System.out.println("     Has conference: "
-							+ conference.getName() + "; starts: "
-							+ conference.getResourcesStartTime() + "; stops: "
-							+ conference.getResourcesStopTime() + "; Id: "
-							+ conference.getId());
-				}
-			}
-			session.getTransaction().commit();
+			showList();
 
 		} else if (op.equalsIgnoreCase("add")) {
-			String element = "", hostname = null;
-			IsabelMachine.SubType type = null;
-			for (String arg : args) {
-
-				if (arg.equalsIgnoreCase("add"))
-					continue;
-
-				if (arg.startsWith("-")) {
-					element = arg.substring(1);
-
-					continue;
-				} else if (element.equals("")) {
-					imprimirAyudaAdd();
-					return;
-				}
-
-				if (element.equals("hostname")) {
-					hostname = arg;
-				} else if (element.equals("type")) {
-					if (arg.equalsIgnoreCase(			"amiIsabel")) {
-						type = IsabelMachine.SubType.amiIsabel;
-					} else if (arg.equalsIgnoreCase(	"vmIsabel")) {
-						type = IsabelMachine.SubType.vmIsabel;
-					} else if (arg.equalsIgnoreCase(	"spy")) {
-						type = IsabelMachine.SubType.Spy;
-					} else if (arg.equalsIgnoreCase(	"amiVNC")) {
-						type = IsabelMachine.SubType.amiVNC;
-					} else if (arg.equalsIgnoreCase(	"vmVNC")) {
-						type = IsabelMachine.SubType.vmVNC;
-					}
-				}
-				element = "";
-			}
-			if (	type == null ||
-					((	type.equals(IsabelMachine.SubType.vmIsabel) || 
-						type.equals(IsabelMachine.SubType.vmVNC) || 
-						type.equals(IsabelMachine.SubType.Spy)) 
-						&& hostname == null)) {
-				imprimirAyudaAdd();
-				return;
-			}
-			IsabelMachine isabel = new IsabelMachine();
-			isabel.setHostname(hostname);
-			isabel.setSubType(type);
-
-			Session hSession = HibernateUtil.getSessionFactory()
-					.getCurrentSession();
-			hSession.beginTransaction();
-			hSession.save(isabel);
-			hSession.getTransaction().commit();
-
-			if (isabel.getType().equals(IsabelMachine.Type.VNC)) {
-				configureVNC(isabel);
-			}
-			System.out.println("Restart Conference Manager in order to apply changes.");
+			addMachine(args);
 		} else if (op.equalsIgnoreCase("remove")) {
 			if (args.length != 2) {
 				imprimirAyudaRemove();
 				return;
 			}
 
-			String id = args[1];
-			Session session = HibernateUtil.getSessionFactory()
-					.getCurrentSession();
-			session.beginTransaction();
-			IsabelMachine machine = (IsabelMachine) session.get(
-					IsabelMachine.class, new Long(id));
-			session.delete(machine);
-			session.getTransaction().commit();
-			if (machine.getType().equals(IsabelMachine.Type.VNC)) {
-				// Lo borramos del archivo de configuracion.
-				System.out.println("Borrando " + machine.getHostname() + " de "
-						+ ConfigurationParser.sambaFile);
-				Share share = SmbWizard.getInstance().getShare(
-						machine.getHostname());
-				System.out.println(share == null);
-				if (share != null) {
-					System.out.println("Borrando share");
-					SmbWizard.getInstance().deleteShare(share.getName());
-					SmbWizard.getInstance().save();
-				}
-			}
-			System.out.println("Restart Conference Manager in order to apply changes.");
+			removeMachine(args);
 		} else {
 			imprimirAyudas();
 		}
 
 	}
+	
+	private static void showList() {
+		
+		List<IsabelMachine> preResult = IsabelMachineRegistry.getIsabelMachines();
+
+		for (IsabelMachine isabel : preResult) {
+
+			System.out.println("ISABEL MACHINE. Hostname: "
+					+ isabel.getHostname() + "; tipo: "
+					+ getIsabelType(isabel.getSubType()) + "; tipo de nodo: " + getIsabelNodeType(isabel.getIsabelNodeType()) + "; Id: "
+					+ isabel.getId());
+			Conference conference = isabel.getConference();
+			if (conference != null) {
+				System.out.println("     Has conference: "
+						+ conference.getName() + "; starts: "
+						+ conference.getResourcesStartTime() + "; stops: "
+						+ conference.getResourcesStopTime() + "; Id: "
+						+ conference.getId());
+			}
+		}
+	}
+	
+	private static void addMachine(String[] args) {
+		String element = "", hostname = null;
+		IsabelMachine.SubType type = null;
+		for (String arg : args) {
+
+			if (arg.equalsIgnoreCase("add"))
+				continue;
+
+			if (arg.startsWith("-")) {
+				element = arg.substring(1);
+
+				continue;
+			} else if (element.equals("")) {
+				imprimirAyudaAdd();
+				return;
+			}
+
+			if (element.equals("hostname")) {
+				hostname = arg;
+			} else if (element.equals("type")) {
+				if (arg.equalsIgnoreCase(			"amiIsabel")) {
+					type = IsabelMachine.SubType.amiIsabel;
+				} else if (arg.equalsIgnoreCase(	"vmIsabel")) {
+					type = IsabelMachine.SubType.vmIsabel;
+				} else if (arg.equalsIgnoreCase(	"spy")) {
+					type = IsabelMachine.SubType.Spy;
+				} else if (arg.equalsIgnoreCase(	"amiVNC")) {
+					type = IsabelMachine.SubType.amiVNC;
+				} else if (arg.equalsIgnoreCase(	"vmVNC")) {
+					type = IsabelMachine.SubType.vmVNC;
+				}
+			}
+			element = "";
+		}
+		if (	type == null ||
+				((	type.equals(IsabelMachine.SubType.vmIsabel) || 
+					type.equals(IsabelMachine.SubType.vmVNC) || 
+					type.equals(IsabelMachine.SubType.Spy)) 
+					&& hostname == null)) {
+			imprimirAyudaAdd();
+			return;
+		}
+		IsabelMachine isabel = new IsabelMachine();
+		isabel.setHostname(hostname);
+		isabel.setSubType(type);
+		
+		IsabelMachineRegistry.addIsabelMachine(isabel);
+
+		if (isabel.getType().equals(IsabelMachine.Type.VNC)) {
+			configureVNC(isabel);
+		}
+		
+		System.out.println("Restart Conference Manager in order to apply changes.");
+	}
+	
+	private static void removeMachine(String[] args) {
+		String id = args[1];
+		Session session = HibernateUtil.getSessionFactory()
+				.getCurrentSession();
+		session.beginTransaction();
+		IsabelMachine machine = (IsabelMachine) session.get(
+				IsabelMachine.class, new Long(id));
+		session.delete(machine);
+		session.getTransaction().commit();
+		if (machine.getType().equals(IsabelMachine.Type.VNC)) {
+			// Delete it from the samba config file.
+			System.out.println("Deleting " + machine.getHostname() + " from "
+					+ ConfigurationParser.sambaFile);
+			Share share = SmbWizard.getInstance().getShare(
+					machine.getHostname());
+			System.out.println(share == null);
+			if (share != null) {
+				System.out.println("Share deleted");
+				SmbWizard.getInstance().deleteShare(share.getName());
+				SmbWizard.getInstance().save();
+			}
+		}
+		System.out.println("Restart Conference Manager in order to apply changes.");
+	}
 
 	/**
-	 * Imprime ayuda para todos los comandos
+	 * Prints help for all commands
 	 */
 	public static void imprimirAyudas() {
 		imprimirAyudaList();
@@ -196,14 +194,14 @@ public class IsabelMachinesManager {
 	}
 
 	/**
-	 * Imprime la ayuda para el comando list.
+	 * Prints help for List command
 	 */
 	public static void imprimirAyudaList() {
 		System.out.println("Usage: java IsabelMachinesManager list");
 	}
 
 	/**
-	 * Imprime la ayuda para el comando add.
+	 * Prints help for Add command
 	 */
 	public static void imprimirAyudaAdd() {
 		System.out
@@ -211,7 +209,7 @@ public class IsabelMachinesManager {
 	}
 
 	/**
-	 * Imprime la ayuda para el comando remove.
+	 * Prints help for Remove command
 	 */
 	public static void imprimirAyudaRemove() {
 		System.out
@@ -219,9 +217,10 @@ public class IsabelMachinesManager {
 	}
 
 	/**
-	 * Configura una maquina VNC en el smb.conf
+	 * Config a VNC machine in the samba config file
 	 * 
 	 * @param isabel
+	 * VNC Machine
 	 */
 	public static void configureVNC(IsabelMachine isabel) {
 		VSTManager vst = new VSTManager();
@@ -229,13 +228,13 @@ public class IsabelMachinesManager {
 	}
 
 	/**
-	 * Devuelve un String con el tipo de maquina.
+	 * Returns the type of the machine.
 	 * 
 	 * @param type
-	 * Tipo de maquina.
+	 * The machine type specified by SubType class.
 	 * 
 	 * @return
-	 * Un string representando el tipo de maquina.
+	 * Machine type: "spy", "vmVnc", "vmIsabel", "amiVNC" or "amiIsabel".
 	 */
 	public static String getIsabelType(IsabelMachine.SubType type) {
 		switch (type) {
