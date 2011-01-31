@@ -12,64 +12,69 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Programador de eventos de Isabel. Se encarga de programar y mantener la consistencia
- * de las programaciones de eventos de inicio y parada de conferencias de Isabel al igual que
- * eventos de inicio y parada de sesiones de esas conferencias.
+ * Isabel events scheduler. It is responsible for scheduling and mantaining start and stop
+ * events consistency for conference as well as sessions.
  * 
- * La programacion de estos eventos es persistente ya que se guarda en una base de datos que 
- * se consulta cada vez que se inicia la aplicaci�n. Esto se debe a la utilizacion de la 
- * biblioteca Quartz de Java.
- * 
+ * The Isabel event scheduling is persistent because it stores all the information in 
+ * a data base that it query each time that the application starts. For doing this Isabel
+ * Scheduler uses the Java library named Quartz.
+ *  
  * @author jcervino@dit.upm.es
  *
  */
 public class IsabelScheduler {
 
 	/**
-	 * Logs de la aplicacion
+	 * Application logs.
 	 */
 	protected static Logger log = LoggerFactory
 			.getLogger(IsabelScheduler.class);
 
 	/**
-	 * Instancia del programador. Utilizado para hacer Singleton.
+	 * Scheduler instance. Used for doing Singleton.
 	 */
 	private static IsabelScheduler isScheduler;
 	
 	/**
-	 * Programador de trabajos
+	 * Jobs scheduler.
 	 */
 	private JobScheduler jobScheduler;
 	
 	/**
-	 * Constructor privado del programador.
+	 * Private constructor of the scheduler.
 	 */
 	private IsabelScheduler() {
 		jobScheduler = new JobScheduler();
 	}
 	
+	/**
+	 * Retrieve the job scheduler.
+	 * 
+	 * @return
+	 * Returns the Scheduler of start/stop jobs.
+	 */
 	public JobScheduler getJobScheduler() {
 		return jobScheduler;
 	}
 
 	/**
-	 * Inicia el programador.
+	 * Inits the Isabel Scheduler.
 	 */
 	public void start() {
 		jobScheduler.start();
 	}
 
 	/**
-	 * Para el programador.
+	 * Stops the Isabel Scheduler actions.
 	 */
 	public void stop() {
 		jobScheduler.stop();
 	}
 
 	/**
-	 * Devuelve una instancia Singleton del programador.
+	 * Returns or creates a singleton instance of the Isabel Scheduler.
 	 * 
-	 * @return Unica instancia del programador.
+	 * @return The single instance of the scheduler.
 	 */
 	public static IsabelScheduler getInstance() {
 		if (isScheduler == null)
@@ -78,13 +83,13 @@ public class IsabelScheduler {
 	}
 	
 	/**
-	 * Programacion inicial de una conferencia.
+	 * It schedules a conference.
 	 * 
 	 * @param conference
-	 * Conferencia que se quiere programar para iniciar y para en unas fechas determinadas.
+	 * Conference information to use in the initial scheduling.
 	 * 
 	 * @return
-	 * Un flag indicando si se ha podido programar la conferencia.
+	 * Response with the result of the scheduling.
 	 */
 	public synchronized SchedulerResponse scheduleConference(Conference conference) {
 		
@@ -115,20 +120,22 @@ public class IsabelScheduler {
 	}
 
 	/**
-	 * Vuelve a programar una conferencia.
+	 * Reschedule an existent conference.
 	 * 
 	 * @param newConference
-	 * La nueva configuracion de la conferencia.
+	 * New conference information.
 	 * 
 	 * @param conference
-	 * La antigua configuracion de la conferencia.
+	 * Old conference information, that should contains the ID of the conference.
 	 * 
 	 * @return
-	 * Un flag indicando si se ha podido programar o no.
+	 * Response with the result of the rescheduling.
 	 */
-	public synchronized SchedulerResponse rescheduleConference(Conference newConference, Conference conference) {
+	public synchronized SchedulerResponse rescheduleConference(Conference newConference, Long conferenceID) {
 		
 		log.debug("Rescheduling conference " + newConference.getName());
+		
+		Conference conference = ConferenceRegistry.get(conferenceID);
 		
 		Date startDateTime = conference.getResourcesStartTime();
 		Date stopDateTime = conference.getResourcesStopTime();
@@ -191,14 +198,14 @@ public class IsabelScheduler {
 	}
 
 	/**
-	 * Quita la programacion de la conferencia.
+	 * It removes a scheduled conference.
 	 * 
 	 * @param conference
-	 * Programacion que se quiere desprogramar.
+	 * Conference information that should have the conference ID.
 	 */
 	public synchronized void unscheduleConference(Conference conference) {
 		for (Session session : conference.getSession()) {
-			unscheduleSession(conference, session);
+			unscheduleSession(session);
 		}
 		jobScheduler.unscheduleConferenceJobs(conference);
 		ConferenceRegistry.remove(conference);
@@ -206,22 +213,22 @@ public class IsabelScheduler {
 	
 	
 	/**
-	 * Programa una nueva sesion en la conferencia dada.
+	 * Schedules a new session for the given conference.
 	 * 
-	 * @param conference
-	 * Conferencia de la que depende la sesion.
+	 * @param conferenceID
+	 * Conference that will own the session.
 	 * 
 	 * @param session
-	 * Sesion que se quiere programar dentro de la conferencia.
+	 * Session information that is going to be used for scheduling.
 	 * 
 	 * @return
-	 * Un flag indicando si se ha podido programar la sesion dentro de la conferencia.
+	 * Scheduler response indicating the result of the scheduling.
 	 */
-	public synchronized SchedulerResponse scheduleSession(Conference conference, Session session) {
+	public synchronized SchedulerResponse scheduleSession(Long conferenceID, Session session) {
+		
+		Conference conference = ConferenceRegistry.get(conferenceID);
 		
 		log.debug("Programando la sesion " + session.getName() + " de la conferencia " + conference.getName());
-		
-		conference = ConferenceRegistry.get(conference.getId());
 		
 		Date nowWithMargin = new Date();
 		
@@ -261,19 +268,21 @@ public class IsabelScheduler {
 	}
 
 	/**
-	 * Reprograma la nueva sesion. La sesion antigua debe tener una conferencia asignada.
+	 * Reschedules an existent session. The old session must have a conference assigned.
 	 * 
 	 * @param oldSession
-	 * Antigua configuracion de la sesion.
+	 * Old configuration of the session.
 	 * 
 	 * @param newSession
-	 * Nueva configuracion de la sesion.
+	 * New configuration of the session.
 	 * 
 	 * @return
-	 * Un flag indicando si se ha podido reprogramar la sesion o no.
+	 * Scheduler response with the result of the rescheduling.
 	 */
-	public synchronized SchedulerResponse rescheduleSession(Session oldSession, Session newSession) {
+	public synchronized SchedulerResponse rescheduleSession(Long sessionID, Session newSession) {
 
+		Session oldSession = ConferenceRegistry.getSession(sessionID);
+		
 		Conference conference = oldSession.getConference();
 		conference = ConferenceRegistry.get(conference.getId());
 		
@@ -336,15 +345,15 @@ public class IsabelScheduler {
 		log.debug("Old dates: " + oldSession.getStartDate() + " - " + oldSession.getStopDate());
 		log.debug("New dates: " + newSession.getStartDate() + " - " + newSession.getStopDate());
 		
-		// Actualizamos la sesion.
+		// We update the session.
 		newSession = ConferenceRegistry.updateSession(oldSession.getId(),
 				newSession);
 		
-		// Obtenemos la version actualizada (muy importante)
+		// Get the updated conference (important!)
 		conference = ConferenceRegistry.get(conference.getId());
 		newSession.setConference(conference);
 		
-		// Cambiamos las tareas de la sesi�n.
+		// Change the session jobs.
 		if (newSession.getStartDate().after(new Date())) {
 			jobScheduler.unscheduleStartSessionJob(oldSession);
 			jobScheduler.scheduleStartSessionJob(newSession);
@@ -360,15 +369,12 @@ public class IsabelScheduler {
 	}
 	
 	/**
-	 * Elimina una sesion programada en una conferencia dada.
-	 * 
-	 * @param conference
-	 * Conferencia en la cual esta la sesion que queremos eliminar.
+	 * Removes a scheduled session in a given conference.
 	 * 
 	 * @param session
-	 * Sesion que queremos eliminar.
+	 * Session that we want to remove.
 	 */
-	public synchronized void unscheduleSession(Conference conference, Session session) {
+	public synchronized void unscheduleSession(Session session) {
 		ConferenceRegistry.removeSession(session);
 		jobScheduler.unscheduleSessionJobs(session);
 	}

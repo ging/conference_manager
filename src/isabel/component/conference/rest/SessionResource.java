@@ -130,7 +130,7 @@ public class SessionResource extends ServerResource {
 				}
 			}
 			
-			SchedulerResponse response = IsabelScheduler.getInstance().rescheduleSession(session, newSession);
+			SchedulerResponse response = IsabelScheduler.getInstance().rescheduleSession(session.getId(), newSession);
 			if (!response.ok) {
 				ConflictEntity conflict = new ConflictEntity();
 				getResponse().setStatus(Status.CLIENT_ERROR_CONFLICT, response.errorMessage);
@@ -175,7 +175,7 @@ public class SessionResource extends ServerResource {
 				return createForbidden("The session is running");
 			} else {
 				this.getResponse().setStatus(Status.SUCCESS_OK, "OK");
-				IsabelScheduler.getInstance().unscheduleSession(conference, session);
+				IsabelScheduler.getInstance().unscheduleSession(session);
 			}
 		} catch (Exception e) {
 			log.error("Error removing session " + session.getId() + "; message: " + e.getLocalizedMessage());

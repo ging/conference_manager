@@ -43,6 +43,21 @@ public class ConferenceRegistry {
 		}
 		return conference;
 	}
+	
+	public static isabel.component.conference.data.Session getSession(long id) {
+		isabel.component.conference.data.Session session = null;
+		Session hSession = HibernateUtil.getSessionFactory().getCurrentSession();
+		try {
+			hSession.beginTransaction();
+			session = (isabel.component.conference.data.Session) hSession.get(isabel.component.conference.data.Session.class, id);
+			session.getConference();
+		} catch (Exception e) {
+
+		} finally {
+			hSession.getTransaction().commit();
+		}
+		return session;
+	}
 
 	/**
 	 * Incluye una nueva conferencia en la base de datos.

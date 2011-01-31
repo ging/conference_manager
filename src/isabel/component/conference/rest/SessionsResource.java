@@ -33,9 +33,8 @@ public class SessionsResource extends ServerResource {
 		long conferenceID = Long.parseLong((String) getRequest()
 				.getAttributes().get("conferenceID"));
 		conference = ConferenceRegistry.get(conferenceID);
-
 		getRequestAttributes().put("conference", conference);
-
+		
 		if (conference == null) {
 			NotFoundEntity notFound = new NotFoundEntity();
 			notFound.event_not_found = "" + conferenceID;
@@ -68,7 +67,7 @@ public class SessionsResource extends ServerResource {
 			log.debug("New session request with name " + session.getName() + "; in conference " + conference.getId());
 			
 			// We already know the conference that owns it. Try scheduling.
-			SchedulerResponse response = IsabelScheduler.getInstance().scheduleSession(conference, session);
+			SchedulerResponse response = IsabelScheduler.getInstance().scheduleSession(conference.getId(), session);
 
 			if (response.ok) {
 			

@@ -40,8 +40,8 @@ public class StreamingResource extends ServerResource {
 	}
 
 	/**
-	 * Devuelve el codigo que hay que empotrar en la pagina para mostrar el
-	 * reproductor.
+	 * Returns the code that is going to be embedded in a HTML for showing
+	 * the player.
 	 * 
 	 * @return
 	 */

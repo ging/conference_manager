@@ -136,7 +136,7 @@ public class ConferenceResource extends ServerResource {
 							Status.CLIENT_ERROR_UNPROCESSABLE_ENTITY,
 							"Unprocessable Entity");
 				}
-				SchedulerResponse response = IsabelScheduler.getInstance().rescheduleConference(newConference, conference);
+				SchedulerResponse response = IsabelScheduler.getInstance().rescheduleConference(newConference, conference.getId());
 				if (!response.ok) {
 					ConflictEntity conflict = new ConflictEntity();
 					getResponse().setStatus(Status.CLIENT_ERROR_CONFLICT,response.errorMessage);
