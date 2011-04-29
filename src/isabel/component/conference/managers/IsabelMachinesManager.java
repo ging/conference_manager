@@ -54,7 +54,7 @@ public class IsabelMachinesManager {
 		}
 
 		if (args.length < 1) {
-			imprimirAyudas();
+			printHelps();
 			return;
 		}
 
@@ -72,13 +72,13 @@ public class IsabelMachinesManager {
 			addMachine(args);
 		} else if (op.equalsIgnoreCase("remove")) {
 			if (args.length != 2) {
-				imprimirAyudaRemove();
+				printRemoveCommandHelp();
 				return;
 			}
 
 			removeMachine(args);
 		} else {
-			imprimirAyudas();
+			printHelps();
 		}
 
 	}
@@ -117,7 +117,7 @@ public class IsabelMachinesManager {
 
 				continue;
 			} else if (element.equals("")) {
-				imprimirAyudaAdd();
+				printAddCommandHelp();
 				return;
 			}
 
@@ -143,7 +143,7 @@ public class IsabelMachinesManager {
 					type.equals(IsabelMachine.SubType.vmVNC) || 
 					type.equals(IsabelMachine.SubType.Spy)) 
 					&& hostname == null)) {
-			imprimirAyudaAdd();
+			printAddCommandHelp();
 			return;
 		}
 		IsabelMachine isabel = new IsabelMachine();
@@ -187,23 +187,23 @@ public class IsabelMachinesManager {
 	/**
 	 * Prints help for all commands
 	 */
-	public static void imprimirAyudas() {
-		imprimirAyudaList();
-		imprimirAyudaAdd();
-		imprimirAyudaRemove();
+	public static void printHelps() {
+		printListCommandHelp();
+		printAddCommandHelp();
+		printRemoveCommandHelp();
 	}
 
 	/**
 	 * Prints help for List command
 	 */
-	public static void imprimirAyudaList() {
+	public static void printListCommandHelp() {
 		System.out.println("Usage: java IsabelMachinesManager list");
 	}
 
 	/**
 	 * Prints help for Add command
 	 */
-	public static void imprimirAyudaAdd() {
+	public static void printAddCommandHelp() {
 		System.out
 				.println("Usage: java IsabelMachinesManager add -hostname machineHostname -type [vmIsabel, spy, vmVnc, amiIsabel, amiVnc]");
 	}
@@ -211,7 +211,7 @@ public class IsabelMachinesManager {
 	/**
 	 * Prints help for Remove command
 	 */
-	public static void imprimirAyudaRemove() {
+	public static void printRemoveCommandHelp() {
 		System.out
 				.println("Usage: java IsabelMachinesManager remove machineID");
 	}
