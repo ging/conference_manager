@@ -366,9 +366,6 @@ public class ConferenceRegistry {
 		session.beginTransaction();
 		isabel.component.conference.data.Session sessionToRemove = (isabel.component.conference.data.Session) session
 				.get(isabel.component.conference.data.Session.class, confSession.getId());
-		//Conference conf = (Conference) session.get(Conference.class,
-		//		conference.getId());
-		//conf.getSessions().remove(sessionToRemove);
 		session.delete(sessionToRemove);
 		session.getTransaction().commit();
 	}
