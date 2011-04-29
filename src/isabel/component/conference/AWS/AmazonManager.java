@@ -4,7 +4,6 @@ import isabel.component.conference.CloudManager;
 import isabel.component.conference.IsabelMachineRegistry;
 import isabel.component.conference.data.Conference;
 import isabel.component.conference.data.IsabelMachine;
-import isabel.component.conference.scheduler.IsabelScheduler;
 import isabel.component.conference.util.ConfigurationParser;
 
 import java.util.ArrayList;
@@ -19,7 +18,7 @@ public class AmazonManager implements CloudManager {
 	 * Logs de la aplicacion
 	 */
 	protected static Logger log = LoggerFactory
-			.getLogger(IsabelScheduler.class);
+			.getLogger(AmazonManager.class);
 
 	private boolean isabelInitialized = false;
 	
@@ -130,6 +129,10 @@ class MachinesInitializer extends Thread {
 }
 
 class MachinesEraser extends Thread {
+	
+	protected static Logger log = LoggerFactory
+	.getLogger(MachinesEraser.class);
+	
 	private List<IsabelMachine> _machines;
 	
 	public MachinesEraser(List<IsabelMachine> machines) {
@@ -143,13 +146,19 @@ class MachinesEraser extends Thread {
 		for (IsabelMachine machine : _machines) {
 			AWSInstance instance = new AWSInstance();
 			instance.instanceID = machine.getExternalID();
-			instances.add(instance);
+			if (machine.getExternalID() == null) {
+				log.error("Machine " + machine.getId() + " of type " + machine.getType() + " has null AWS ID");
+			} else {
+				instances.add(instance);	
+			}
 			machine.setExternalID("");
 			machine.setHostname("");
 			IsabelMachineRegistry.updateIsabelMachine(machine.getId(), machine);
 		}
 		
 		AWSAPI.stopHost(instances);
+		
+		
 		
 	}
 }

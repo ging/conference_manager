@@ -161,15 +161,18 @@ public class StopConferenceJob extends ConferenceJob {
 			
 			// Comprobamos en que Cloud estaban las maquinas para tener que apagarlas o no.
 			CloudManager manager = null;
-			switch (conference.getCloud()) {
-			case VMWare:
-				manager = new VMWareManager();
-				break;
-			case Amazon:
-				manager = new AmazonManager();
-				break;
-			}
 			
+			if (conference.getCloud() != null) {
+			
+				switch (conference.getCloud()) {
+				case VMWare:
+					manager = new VMWareManager();
+					break;
+				case Amazon:
+					manager = new AmazonManager();
+					break;
+				}
+			}
 			manager.cleanConference(conference);
 			
 			conference = ConferenceRegistry.get(conference.getId());

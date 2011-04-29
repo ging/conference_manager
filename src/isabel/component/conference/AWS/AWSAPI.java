@@ -2,7 +2,9 @@ package isabel.component.conference.AWS;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.auth.BasicAWSCredentials;
@@ -26,7 +28,7 @@ public class AWSAPI {
 	public static String serviceKey = "AKIAJBSUMETBJKCJYG7A";
 	public static String serviceSecret = "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";
 
-	public static Logger log = Logger.getLogger(AWSAPI.class.getName());
+	protected static Logger log = LoggerFactory.getLogger(AWSAPI.class);
 	
 	public static List<AWSInstance> startHost(String amiID, String size, int num) {
 		// Crea un nuevo host para el amiID asignado.
@@ -43,7 +45,7 @@ public class AWSAPI {
 		request.setMaxCount(num);
 		request.setMinCount(num);
 		request.setPlacement(zone);
-		request.setKeyName("test");
+		request.setKeyName("isabel");
 		request.setInstanceType(size);
 		request.setDisableApiTermination(false);
 
@@ -69,7 +71,7 @@ public class AWSAPI {
 					try {
 						Thread.sleep(3000); // Hace una peticion cada 3 segundos.
 					} catch (InterruptedException e) {
-						e.printStackTrace();
+						log.error(e.getLocalizedMessage());
 					}
 				}
 
@@ -150,7 +152,7 @@ public class AWSAPI {
 
 		} catch (AmazonServiceException ex) {
 
-			log.severe("Caught Exception: " + ex.getMessage() + "; "
+			log.error("Caught Exception: " + ex.getMessage() + "; "
 					+ "Response Status Code: " + ex.getStatusCode() + "; "
 					+ "Error Code: " + ex.getErrorCode() + "; "
 					+ "Error Type: " + ex.getErrorType() + "; "
