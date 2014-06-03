@@ -25,8 +25,8 @@ public class AWSAPI {
 	
 	public static String amazonURL = "https://eu-west-1.ec2.amazonaws.com";
 	// private static String IsabelImageID = "ami-a9507add";
-	public static String serviceKey = "AKIAJBSUMETBJKCJYG7A";
-	public static String serviceSecret = "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";
+	public static String serviceKey = "";
+	public static String serviceSecret = "";
 
 	protected static Logger log = LoggerFactory.getLogger(AWSAPI.class);
 	
